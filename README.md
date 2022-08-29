@@ -10,7 +10,7 @@ Rose Garden is a Django app for displaying the books in my personal library.
 
 Quick start
 -----------
-1. Run python pip install git+https://github.com/orbnose/rose-garden#egg=rose-garden
+1. Run python -m pip install git+https://github.com/orbnose/rose-garden#egg=rose-garden
 
 1. Add "rosegarden" to your INSTALLED_APPS setting like this::
 

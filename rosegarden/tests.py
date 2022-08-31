@@ -50,7 +50,7 @@ class BookModelTests(TestCase):
     def test_validator_author_less_than_or_equal_to_60_characters(self):
         testbook = Book(
             title = "A pithy title",
-            author_editor = "Smith,Joan Joan Joan Joan Joan Joan Joan Joan Joan Joan Joan Joan",
+            author_editor = "Smith,Joan Marie",
             ddc_number = 400,
             is_literature = False,
             is_biography = False,
@@ -69,7 +69,7 @@ class BookModelTests(TestCase):
         with self.assertRaisesMessage(ValidationError, 'This field cannot be blank.'):
             testbook.full_clean()
     
-    def test_validator_author_regex(self):
+    def test_validator_author_regex1(self):
         #Step 1: Valid Formats
         testbook = Book(
             title = "A pithy title",
@@ -80,46 +80,141 @@ class BookModelTests(TestCase):
             )
         testbook.full_clean()
 
+    def test_validator_author_regex2(self):
+        testbook = Book(
+            title = "A pithy title",
+            author_editor = "Smith,Joan",
+            ddc_number = 400,
+            is_literature = False,
+            is_biography = False,
+            )
         testbook.author_editor = "Smyth,J"
         testbook.full_clean()
 
+    def test_validator_author_regex3(self):
+        testbook = Book(
+            title = "A pithy title",
+            author_editor = "Smith,Joan",
+            ddc_number = 400,
+            is_literature = False,
+            is_biography = False,
+            )
         testbook.author_editor = "Evil Corp Publishing,"
         testbook.full_clean()
 
+    def test_validator_author_regex4(self):
+        testbook = Book(
+            title = "A pithy title",
+            author_editor = "Smith,Joan",
+            ddc_number = 400,
+            is_literature = False,
+            is_biography = False,
+            )
         testbook.author_editor = "Smith,Jules Verne"
         testbook.full_clean()
     
+    def test_validator_author_regex5(self):
+        testbook = Book(
+            title = "A pithy title",
+            author_editor = "Smith,Joan",
+            ddc_number = 400,
+            is_literature = False,
+            is_biography = False,
+            )
         testbook.author_editor = "Smith,Jules-Verne"
         testbook.full_clean()
 
+    def test_validator_author_regex6(self):
+        testbook = Book(
+            title = "A pithy title",
+            author_editor = "Smith,Joan",
+            ddc_number = 400,
+            is_literature = False,
+            is_biography = False,
+            )
         testbook.author_editor = "Smith,Jules-Verne Billy-Joe"
         testbook.full_clean()
 
-        #Step 2: Various Invalid Formats
+    def test_validator_author_bad_regex1(self):
+        testbook = Book(
+            title = "A pithy title",
+            author_editor = "Smith,Joan",
+            ddc_number = 400,
+            is_literature = False,
+            is_biography = False,
+            )
         testbook.author_editor = "Plato"
         with self.assertRaisesMessage(ValidationError, 'Enter a valid value.'):
             testbook.full_clean()
-        
+    
+    def test_validator_author_bad_regex2(self):
+        testbook = Book(
+            title = "A pithy title",
+            author_editor = "Smith,Joan",
+            ddc_number = 400,
+            is_literature = False,
+            is_biography = False,
+            )
         testbook.author_editor = "Sm1th,Kesha"
         with self.assertRaisesMessage(ValidationError, 'Enter a valid value.'):
             testbook.full_clean()
-
+    
+    def test_validator_author_bad_regex3(self):
+        testbook = Book(
+            title = "A pithy title",
+            author_editor = "Smith,Joan",
+            ddc_number = 400,
+            is_literature = False,
+            is_biography = False,
+            )
         testbook.author_editor = "Smith,Ke$ha"
         with self.assertRaisesMessage(ValidationError, 'Enter a valid value.'):
             testbook.full_clean()
-        
+    
+    def test_validator_author_bad_regex4(self):
+        testbook = Book(
+            title = "A pithy title",
+            author_editor = "Smith,Joan",
+            ddc_number = 400,
+            is_literature = False,
+            is_biography = False,
+            )
         testbook.author_editor = "Smyth, Jules"
         with self.assertRaisesMessage(ValidationError, 'Enter a valid value.'):
             testbook.full_clean()
-        
+    
+    def test_validator_author_bad_regex5(self):
+        testbook = Book(
+            title = "A pithy title",
+            author_editor = "Smith,Joan",
+            ddc_number = 400,
+            is_literature = False,
+            is_biography = False,
+            )
         testbook.author_editor = "Smyth,Jules-"
         with self.assertRaisesMessage(ValidationError, 'Enter a valid value.'):
             testbook.full_clean()
-        
+    
+    def test_validator_author_bad_regex6(self):
+        testbook = Book(
+            title = "A pithy title",
+            author_editor = "Smith,Joan",
+            ddc_number = 400,
+            is_literature = False,
+            is_biography = False,
+            )
         testbook.author_editor = "Smyth,Jules- Verne"
         with self.assertRaisesMessage(ValidationError, 'Enter a valid value.'):
             testbook.full_clean()
-        
+    
+    def test_validator_author_bad_regex7(self):
+        testbook = Book(
+            title = "A pithy title",
+            author_editor = "Smith,Joan",
+            ddc_number = 400,
+            is_literature = False,
+            is_biography = False,
+            )
         testbook.author_editor = "Smyth,Jules-Verne "
         with self.assertRaisesMessage(ValidationError, 'Enter a valid value.'):
             testbook.full_clean()

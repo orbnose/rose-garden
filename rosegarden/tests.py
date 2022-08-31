@@ -35,6 +35,8 @@ class BookModelTests(TestCase):
             is_literature = False,
             is_biography = False,
             )
+        testbook.full_clean()
+        self.assertTrue( len(testbook.title) <= 200)
 
     def test_validator_author_greater_than_60_characters(self):
         testbook = Book(
@@ -56,7 +58,7 @@ class BookModelTests(TestCase):
             is_biography = False,
             )
         testbook.full_clean()
-        self.AssertTrue( len(testbook.title) <= 60)
+        self.assertTrue( len(testbook.title) <= 60)
 
     def test_validator_author_does_not_exist(self):
         testbook = Book(
@@ -133,6 +135,17 @@ class BookModelTests(TestCase):
             is_biography = False,
             )
         testbook.author_editor = "Smith,Jules-Verne Billy-Joe"
+        testbook.full_clean()
+
+    def test_validator_author_regex7(self):
+        testbook = Book(
+            title = "A pithy title",
+            author_editor = "Smith,Joan",
+            ddc_number = 400,
+            is_literature = False,
+            is_biography = False,
+            )
+        testbook.author_editor = "a,b"
         testbook.full_clean()
 
     def test_validator_author_bad_regex1(self):

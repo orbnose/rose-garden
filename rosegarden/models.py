@@ -1,10 +1,11 @@
 from django.db import models
 from django.core import validators
 
-author_regex = validators.RegexValidator(regex='^[A-z]+(-?[A-z]+)?,{1}(([A-z]+(-?[A-z]+)?)?( ?[A-z]+)?)?$')
-# Author name should be in the format Lastname,Firstname[ ][MiddleName1][ ][MiddleName2]
-# Allow for alphabetic, commas, and hyphen characters only in the author or editor name. Only 1 comma in the middle allowed.
-# Hyphens allowed between alphabetic characters, and spaces allowed between firstname alphabetic characters.
+author_regex = validators.RegexValidator(regex=r"^[A-z]+(([,.] |[ '-])[A-z]+)*(\.?)( [IVXLCDM]+)?$")
+# Slightly modified version of Aman Godara's choice 3 from https://stackoverflow.com/questions/2385701/regular-expression-for-first-and-last-name
+# Author name should be in the format First Middle1 Middle2 Last
+# Allow for alphabetic, comma, - and ' characters only in the author or editor name.
+
 
 class Book(models.Model):
     title = models.CharField(max_length=200)

@@ -12,6 +12,3 @@ class Book(models.Model):
     ddc_number = models.DecimalField(max_digits=12, decimal_places=9)
     is_literature = models.BooleanField()
     is_biography = models.BooleanField()
-
-
-^[A-z]+(-?[A-z]+)?,{1}([A-z]+(-?[A-z]+)?)?( ?[A-z]+)+)?$

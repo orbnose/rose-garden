@@ -11,7 +11,7 @@ echo ${ROSEGARDEN_TEST_PARENT_DIR} >"$parentdirfile"
 
 #make the test directory, create venv, install django and rosegarden, make migrations
 mkdir rgTestLibrary
-cd testLibrary
+cd rgTestLibrary
 python -m venv djangovenv
 source djangovenv/bin/activate
 python -m pip install django

@@ -13,5 +13,6 @@ else
 fi
 
 #clean up
+cd $parentdir
 rm -r rgTestLibrary
 rm $parentdirfile

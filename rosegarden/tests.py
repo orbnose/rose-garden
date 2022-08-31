@@ -1,4 +1,5 @@
 from django.test import TestCase
+from django.core.exceptions import ValidationError
 
 from .models import Book
 
@@ -12,4 +13,5 @@ class BookModelTests(TestCase):
             is_literature = False,
             is_biography = False,
             )
-        testbook.full_clean()
+        with self.assertRaisesMessage(ValidationError, 'Ensure this value has at most 200 characters'):
+            testbook.full_clean()

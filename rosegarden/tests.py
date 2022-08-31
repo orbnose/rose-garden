@@ -8,7 +8,7 @@ class BookModelTests(TestCase):
     def test_validator_title_greater_than_200_characters(self):
         testbook = Book(
             title = "A really long title that is ridiculous for a book. I mean come on, people, would you really even read this far if this were printed on the front of a book displayed front and center of a second-hand type of bookstore?",
-            author_editor = "Smith,Joan",
+            author_editor = "Joan Smith",
             ddc_number = 400,
             is_literature = False,
             is_biography = False,
@@ -19,7 +19,7 @@ class BookModelTests(TestCase):
     def test_validator_title_does_not_exist(self):
         testbook = Book(
             title = "",
-            author_editor = "Smith,Joan",
+            author_editor = "Joan Smith",
             ddc_number = 400,
             is_literature = False,
             is_biography = False,
@@ -30,7 +30,7 @@ class BookModelTests(TestCase):
     def test_validator_title_less_than_or_equal_to_200_characters(self):
         testbook = Book(
             title = "A pithy title",
-            author_editor = "Smith,Joan",
+            author_editor = "Joan Smith",
             ddc_number = 400,
             is_literature = False,
             is_biography = False,
@@ -41,7 +41,7 @@ class BookModelTests(TestCase):
     def test_validator_author_greater_than_60_characters(self):
         testbook = Book(
             title = "A pithy title",
-            author_editor = "Smith,Joan Joan Joan Joan Joan Joan Joan Joan Joan Joan Joan Joan",
+            author_editor = "Smith, Joan Joan Joan Joan Joan Joan-Joan Joanne Joan Joan Joan Joan Joan",
             ddc_number = 400,
             is_literature = False,
             is_biography = False,
@@ -52,7 +52,7 @@ class BookModelTests(TestCase):
     def test_validator_author_less_than_or_equal_to_60_characters(self):
         testbook = Book(
             title = "A pithy title",
-            author_editor = "Smith,Joan Marie",
+            author_editor = "Smith, Joan Marie",
             ddc_number = 400,
             is_literature = False,
             is_biography = False,
@@ -136,7 +136,7 @@ class BookModelTests(TestCase):
     def test_validator_author_regex7(self):
         testbook = Book(
             title = "A pithy title",
-            author_editor = "a,b",
+            author_editor = "a b",
             ddc_number = 400,
             is_literature = False,
             is_biography = False,

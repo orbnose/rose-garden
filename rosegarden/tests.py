@@ -315,6 +315,27 @@ class BookModelTests(TestCase):
             )
         with self.assertRaisesMessage(ValidationError, 'Enter a valid value.'):
             testbook.full_clean()
+    
+    def test_validator_ddc_less_than_100_bad(self):
+        testbook = Book(
+            title = "A pithy title",
+            author_editor = "Plato",
+            ddc_number = 1.1,
+            is_literature = False,
+            is_biography = False,
+            )
+        with self.assertRaisesMessage(ValidationError, 'Enter a valid value.'):
+            testbook.full_clean()
+    
+    def test_validator_ddc_less_than_100_good(self):
+        testbook = Book(
+            title = "A pithy title",
+            author_editor = "Plato",
+            ddc_number = "001.1",
+            is_literature = False,
+            is_biography = False,
+            )
+        testbook.full_clean()
 
     def test_validator_ddc_is_valid(self):
         testbook = Book(

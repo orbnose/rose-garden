@@ -269,7 +269,7 @@ class BookModelTests(TestCase):
             is_literature = False,
             is_biography = False,
             )
-        with self.assertRaisesMessage(ValidationError, 'Ensure this value is greater than or equal to 0.'):
+        with self.assertRaisesMessage(ValidationError, 'Enter a valid value.'):
             testbook.full_clean()
     
     def test_validator_ddc_more_than_3_digits_before_decimal(self):
@@ -280,18 +280,40 @@ class BookModelTests(TestCase):
             is_literature = False,
             is_biography = False,
             )
-        with self.assertRaisesMessage(ValidationError, 'Ensure that there are no more than 3 digits before the decimal point.'):
+        with self.assertRaisesMessage(ValidationError, 'Enter a valid value.'):
             testbook.full_clean()
     
     def test_validator_ddc_more_than_9_digits_after_decimal(self):
         testbook = Book(
             title = "A pithy title",
             author_editor = "Plato",
-            ddc_number = 312.12345678910,
+            ddc_number = 312.1234567891,
             is_literature = False,
             is_biography = False,
             )
-        with self.assertRaisesMessage(ValidationError, 'Ensure that there are no more than 9 digits after the decimal point.'):
+        with self.assertRaisesMessage(ValidationError, 'Enter a valid value.'):
+            testbook.full_clean()
+    
+    def test_validator_ddc_bad_numeric_format(self):
+        testbook = Book(
+            title = "A pithy title",
+            author_editor = "Plato",
+            ddc_number = "312.12345.12",
+            is_literature = False,
+            is_biography = False,
+            )
+        with self.assertRaisesMessage(ValidationError, 'Enter a valid value.'):
+            testbook.full_clean()
+    
+    def test_validator_ddc_alpha_character(self):
+        testbook = Book(
+            title = "A pithy title",
+            author_editor = "Plato",
+            ddc_number = "312.1a",
+            is_literature = False,
+            is_biography = False,
+            )
+        with self.assertRaisesMessage(ValidationError, 'Enter a valid value.'):
             testbook.full_clean()
 
     def test_validator_ddc_is_valid(self):
@@ -308,8 +330,8 @@ class BookModelTests(TestCase):
         testbook = Book(
             title = "A pithy title",
             author_editor = "Plato",
-            ddc_number = 312.12345678910,
-            is_literature = "False",
+            ddc_number = 312.12,
+            is_literature = "False flag",
             is_biography = False,
             )
         with self.assertRaisesMessage(ValidationError, 'value must be either True or False'):
@@ -319,9 +341,9 @@ class BookModelTests(TestCase):
         testbook = Book(
             title = "A pithy title",
             author_editor = "Plato",
-            ddc_number = 312.12345678910,
+            ddc_number = 312.12,
             is_literature = False,
-            is_biography = "True",
+            is_biography = "True flag",
             )
         with self.assertRaisesMessage(ValidationError, 'value must be either True or False'):
             testbook.full_clean()

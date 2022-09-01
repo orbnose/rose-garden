@@ -6,11 +6,12 @@ author_regex = validators.RegexValidator(regex=r"^[A-z]+(([,.] |[ '-])[A-z]+)*(\
 # Author name should be in the format First Middle1 Middle2 Last
 # Allow for alphabetic, comma, - and ' characters only in the author or editor name.
 
+greater_than_zero = validators.MinLengthValidator(limit_value=0)
 
 class Book(models.Model):
     title = models.CharField(max_length=200)
     author_editor = models.CharField(max_length=60, validators=[author_regex])
-    ddc_number = models.DecimalField(max_digits=12, decimal_places=9)
+    ddc_number = models.DecimalField(max_digits=12, decimal_places=9, validators=[greater_than_zero])
     is_literature = models.BooleanField()
     is_biography = models.BooleanField()
 

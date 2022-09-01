@@ -6,7 +6,7 @@ author_regex = validators.RegexValidator(regex=r"^[A-z]+(([,.] |[ '-])[A-z]+)*(\
 # Author name should be in the format First Middle1 Middle2 Last
 # Allow for alphabetic, comma, - and ' characters only in the author or editor name.
 
-greater_than_zero = validators.MinLengthValidator(limit_value=0)
+greater_than_zero = validators.MinValueValidator(limit_value=0)
 
 class Book(models.Model):
     title = models.CharField(max_length=200)

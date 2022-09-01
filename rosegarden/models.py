@@ -11,7 +11,7 @@ greater_than_zero = validators.MinValueValidator(limit_value=0)
 class Book(models.Model):
     title = models.CharField(max_length=200)
     author_editor = models.CharField(max_length=60, validators=[author_regex])
-    ddc_number = models.DecimalField(max_digits=12, decimal_places=9, validators=[greater_than_zero])
+    ddc_number = models.DecimalField(max_digits=12, decimal_places=9)#, validators=[greater_than_zero])
     is_literature = models.BooleanField()
     is_biography = models.BooleanField()
 

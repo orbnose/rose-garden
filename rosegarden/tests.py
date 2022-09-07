@@ -433,10 +433,12 @@ class CopyModelTests(TestCase):
 
         testcopy = Copy(version="The old one", branch=testbranch, book=testbook)
         testcopy.save()
+        pk = testcopy.pk
 
         testbranch.delete()
-        testcopy.save()
-        self.assertEqual(testcopy.branch, None)
+        
+        reloadedcopy = Copy.objects.get(pk=pk)
+        self.assertEqual(reloadedcopy.branch, None)
     
     def test_deleted_book(self):
         testbook = Book(
@@ -453,7 +455,8 @@ class CopyModelTests(TestCase):
 
         testcopy = Copy(version="The old one", branch=testbranch, book=testbook)
         testcopy.save()
-
+        pk = testcopy.pk
         testbook.delete()
-        testcopy.save()
-        self.assertEqual(testcopy, None)
+
+        reloadedcopy = Copy.objects.get(pk=pk)
+        self.assertEqual(reloadedcopy, None)

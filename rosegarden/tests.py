@@ -398,7 +398,7 @@ class CopyModelTests(TestCase):
         testbranch = Branch(name="Home Branch", location="Madison, Wisconsin")
         testcopy = Copy(branch=testbranch, book=testbook)
         self.assertEqual(testcopy.branch.name, "Home Branch")
-        self.assertEqual(testcopy.book.title, "A cook book")
+        self.assertEqual(testcopy.book.title, "A cool book")
 
     def test_validator_version_too_long(self):
         testbook = Book(
@@ -426,9 +426,14 @@ class CopyModelTests(TestCase):
             is_literature = False,
             is_biography = False,
             )
+        testbook.save()
+
         testbranch = Branch(name="Home Branch", location="Madison, Wisconsin")
+        testbranch.save()
+
         testcopy = Copy(version="The old one", branch=testbranch, book=testbook)
         testcopy.save()
+
         testbranch.delete()
         self.assertEqual(testcopy.branch, None)
     
@@ -440,8 +445,13 @@ class CopyModelTests(TestCase):
             is_literature = False,
             is_biography = False,
             )
+        testbook.save()
+
         testbranch = Branch(name="Home Branch", location="Madison, Wisconsin")
+        testbranch.save()
+
         testcopy = Copy(version="The old one", branch=testbranch, book=testbook)
         testcopy.save()
+        
         testbook.delete()
         self.assertEqual(testcopy, None)

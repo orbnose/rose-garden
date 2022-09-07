@@ -458,5 +458,5 @@ class CopyModelTests(TestCase):
         pk = testcopy.pk
         testbook.delete()
 
-        reloadedcopy = Copy.objects.get(pk=pk)
-        self.assertEqual(reloadedcopy, None)
+        with self.assertRaises(Copy.DoesNotExist):
+            Copy.objects.get(pk=pk)

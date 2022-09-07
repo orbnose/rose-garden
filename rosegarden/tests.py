@@ -1,7 +1,7 @@
 from django.test import TestCase
 from django.core.exceptions import ValidationError
 
-from .models import Book, Branch
+from .models import Book, Branch, Copy
 
 class BookModelTests(TestCase):
 
@@ -385,3 +385,63 @@ class BranchModelTests(TestCase):
         
         with self.assertRaisesMessage(ValidationError, 'Ensure this value has at most 200 characters'):
             testbranch.full_clean()
+
+class CopyModelTests(TestCase):
+    def test_validator_valid_copy(self):
+        testbook = Book(
+            title = "A cool book",
+            author_editor = "Joan Smith",
+            ddc_number = 400,
+            is_literature = False,
+            is_biography = False,
+            )
+        testbranch = Branch(name="Home Branch", location="Madison, Wisconsin")
+        testcopy = Copy(branch=testbranch, book=testbook)
+        self.assertEqual(testcopy.branch.name, "Home Branch")
+        self.assertEqual(testcopy.book.title, "A cook book")
+
+    def test_validator_version_too_long(self):
+        testbook = Book(
+            title = "A cool book",
+            author_editor = "Joan Smith",
+            ddc_number = 400,
+            is_literature = False,
+            is_biography = False,
+            )
+        testbranch = Branch(name="Home Branch", location="Madison, Wisconsin")
+        testcopy = Copy(
+            version = "Old Queen James Edition, by which his honorable majesty the God Emperor has declared a standard for education, decreeing that all children must duly learn from the One True Source, notwithstanding those harsh words of the critics who will most definitely burn come that great judgement day.",
+            branch = testbranch,
+            book = testbook
+            )
+
+        with self.assertRaisesMessage(ValidationError, 'Ensure this value has at most 200 characters'):
+            testcopy.full_clean()
+        
+    def test_deleted_branch(self):
+        testbook = Book(
+            title = "A cool book",
+            author_editor = "Joan Smith",
+            ddc_number = 400,
+            is_literature = False,
+            is_biography = False,
+            )
+        testbranch = Branch(name="Home Branch", location="Madison, Wisconsin")
+        testcopy = Copy(version="The old one", branch=testbranch, book=testbook)
+        testcopy.save()
+        testbranch.delete()
+        self.assertEqual(testcopy.branch, None)
+    
+    def test_deleted_book(self):
+        testbook = Book(
+            title = "A mediocre book",
+            author_editor = "Joan Smith",
+            ddc_number = 400,
+            is_literature = False,
+            is_biography = False,
+            )
+        testbranch = Branch(name="Home Branch", location="Madison, Wisconsin")
+        testcopy = Copy(version="The old one", branch=testbranch, book=testbook)
+        testcopy.save()
+        testbook.delete()
+        self.assertEqual(testcopy, None)

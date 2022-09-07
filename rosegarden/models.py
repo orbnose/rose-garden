@@ -18,3 +18,8 @@ class Book(models.Model):
 class Branch(models.Model):
     name = models.CharField(max_length=200)
     location = models.CharField(max_length=200)
+
+class Copy(models.Model):
+    version = models.CharField(max_length=200, blank=True)
+    branch = models.ForeignKey(to=Branch, on_delete=models.SET_NULL, null=True)
+    book = models.ForeignKey(to=Book, on_delete=models.CASCADE)

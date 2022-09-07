@@ -435,6 +435,7 @@ class CopyModelTests(TestCase):
         testcopy.save()
 
         testbranch.delete()
+        testcopy.save()
         self.assertEqual(testcopy.branch, None)
     
     def test_deleted_book(self):
@@ -452,6 +453,7 @@ class CopyModelTests(TestCase):
 
         testcopy = Copy(version="The old one", branch=testbranch, book=testbook)
         testcopy.save()
-        
+
         testbook.delete()
+        testcopy.save()
         self.assertEqual(testcopy, None)

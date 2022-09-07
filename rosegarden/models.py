@@ -15,3 +15,6 @@ class Book(models.Model):
     is_literature = models.BooleanField()
     is_biography = models.BooleanField()
 
+class Branch(models.Model):
+    name = models.CharField(max_length=200)
+    location = models.CharField(max_length=200)

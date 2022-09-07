@@ -1,9 +1,10 @@
 from django.test import TestCase
 from django.core.exceptions import ValidationError
 
-from .models import Book
+from .models import Book, Branch
 
 class BookModelTests(TestCase):
+
     
     def test_validator_title_greater_than_200_characters(self):
         testbook = Book(
@@ -368,3 +369,19 @@ class BookModelTests(TestCase):
             )
         with self.assertRaisesMessage(ValidationError, 'value must be either True or False'):
             testbook.full_clean()
+
+class BranchModelTests(TestCase):
+    def test_validator_valid_branch(self):
+        testbranch = Branch(name="Home Branch", location="Madison WI")
+    
+    def test_validator_name_too_long(self):
+        testbranch = Branch(name="Home Branch Home Branch Home Branch Home Branch Home Branch Home Branch Home Branch Home Branch Home Branch Home Branch Home Branch Home Branch Home Branch Home Branch Home Branch Home Branch Home Branch Home Branch Home Branch Home Branch Home Branch", location="Madison WI")
+        
+        with self.assertRaisesMessage(ValidationError, 'Ensure this value has at most 200 characters'):
+            testbranch.full_clean()
+    
+    def test_validator_location_too_long(self):
+        testbranch = Branch(name="Home Branch", location="Madisonshmadison-Madisonshmadison-Madisonshmadison-Madisonshmadison-Madisonshmadison-Madisonshmadison-Madisonshmadison-Madisonshmadison-Madisonshmadison-Madisonshmadison-Madisonshmadison-Madisonshmadison-Madisonshmadison-Madisonshmadison-Madisonshmadison, Wisconsin")
+        
+        with self.assertRaisesMessage(ValidationError, 'Ensure this value has at most 200 characters'):
+            testbranch.full_clean()

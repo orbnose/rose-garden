@@ -1,6 +1,7 @@
 from django.shortcuts import render
 from django.http import HttpResponse
-# Create your views here.
+from .models import Book
+
 def homepage(request):
-    html = "<html><body>Rose Garden Home Page</body></html>"
-    return HttpResponse(html)
+    context = {'book_list': Book.objects.all()}
+    return render(request, 'rosegarden/index.html', context)

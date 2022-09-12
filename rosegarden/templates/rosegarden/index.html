@@ -1,0 +1,32 @@
+<html>
+    <head>
+    </head>
+
+    <body>
+        <h1>Welcome to the Rose Garden library!</h1>
+
+        <table>
+            <tr> {# Header Row #}
+                <th>Title</th>
+                <th>Author or Editor</th>
+                <th>DDC number</th>
+                <th>Category</th>
+                <th>Literature?</th>
+                <th>Biography?</th>
+                <th>Number of Copies</th>
+            </tr>
+            {% for book in book_list %}
+            <tr>
+                <td>{{ book.title }}</td>
+                <td>{{ book.author_editor }}</td>
+                <td>{{ book.ddc_number }}</td>
+                <td>CATEGORY PLACEHOlDER</td>
+                <td>{{ book.is_literature }}</td>
+                <td>{{ book.is_biography }}</td>
+                <td>{{ book.copy_set.count }}</td>
+            </tr>
+            {% endfor %}
+        </table>
+
+    </body>
+</html>

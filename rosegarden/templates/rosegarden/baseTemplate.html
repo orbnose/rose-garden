@@ -1,0 +1,36 @@
+<!DOCTYPE html>
+<html lang="en">
+    <head>
+        <meta charset="UTF-8">
+        <title>{% block title %}Rose Garden Template{% endblock %}</title>
+    </head>
+
+    <body>
+        <div id="page_header">
+            {% block page_header %}
+            <h1>Rose Garden Library</h1>
+
+            <a href="{% url 'rosegarden:index' %}">Home</a>
+            <a href="{% url 'rosegarden:search' %}">Search</a>
+            <a href="{% url 'rosegarden:branch_list' %}">Branch List</a>
+            <a href="{% url 'rosegarden:user_list' %}">User List</a>
+            <a href="{% url 'rosegarden:user_details' 'me' %}">My User Page</a>
+            <a href="{% url 'rosegarden:admin' %}">Login</a>
+            <hr>
+            {% endblock page_header%}
+        </div>
+
+        <div id="content">
+            {% block content%}
+            Welcome to the Rose Garden!
+            {% endblock content%}
+        </div>
+
+        <div id="page_footer">
+            {% block page_footer%}
+            <hr>
+            <h1>Rose Garden Footer</h1>
+            {% endblock page_footer%}
+        </div>
+    </body>
+</html>

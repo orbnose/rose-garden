@@ -1,7 +1,36 @@
 from django.test import TestCase
+from django.urls import reverse
 from django.core.exceptions import ValidationError
 
+import html
+
 from .models import Book, Branch, Copy
+
+def setup_and_save_valid_branch(name="Home Branch", location="Madison Wisconsin"):
+    branch = Branch(name=name, location=location)
+    branch.save()
+    return branch
+
+def setup_and_save_valid_book(title="The Republic", author="Plato", ddc=312, is_lit=False, is_bio=False):
+    book = Book(title=title, author_editor=author, ddc_number=ddc, is_literature=is_lit, is_biography=is_bio)
+    book.save()
+    return book
+
+def setup_and_save_valid_copy(branch,book,version=""):
+    copy = Copy(branch=branch, book=book, version=version)
+    copy.save()
+    return copy
+
+def setup_two_copies_of_two_books():
+    branch = setup_and_save_valid_branch()
+
+    b1 = setup_and_save_valid_book()
+    b2 = setup_and_save_valid_book(title="One Flew Over the Cuckoo's Nest", author="Ken Kesey", ddc=800)
+
+    cpy1 = setup_and_save_valid_copy(branch, b1)
+    cpy2 = setup_and_save_valid_copy(branch, b2)
+
+    return cpy1, cpy2
 
 class BookModelTests(TestCase):
 
@@ -460,3 +489,21 @@ class CopyModelTests(TestCase):
 
         with self.assertRaises(Copy.DoesNotExist):
             Copy.objects.get(pk=pk)
+
+class HomepageTests(TestCase):
+    def test_homepage(self):
+        _,_=setup_two_copies_of_two_books()
+
+        response = self.client.get(reverse('rosegarden:index'))
+        
+        self.assertContains(response, "The Republic")
+        self.assertContains(response, html.escape("One Flew Over the Cuckoo's Nest") )
+
+class BookDetailsPageTests(TestCase):
+    def test_bookdetails(self):
+        copy1, _ = setup_two_copies_of_two_books()
+        pk = copy1.pk
+        response = self.client.get(reverse('rosegarden:book_details', args=[pk]))
+        self.assertContains(response, "The Republic")
+        self.assertContains(response, "Plato")
+        self.assertContains(response, "312")

@@ -14,12 +14,12 @@ def search(request):
     return render(request, 'rosegarden/search.html')
 
 def branchList(request):
-    return HttpResponse('Branch List')
+    context = {'branch_list': Branch.objects.all().order_by('name')}
+    return render(request, 'rosegarden/branchList.html', context)
 
 def branchDetails(request, branch_pk):
     branch = get_object_or_404(Branch, pk=branch_pk)
-    content = 'Branch Page for ' + branch.name
-    return HttpResponse(content)
+    return render(request, 'rosegarden/branchDetails.html', {'branch': branch})
 
 def userList(request):
     return HttpResponse('User List')

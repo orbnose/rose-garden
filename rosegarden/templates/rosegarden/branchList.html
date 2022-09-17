@@ -1,0 +1,20 @@
+{% extends 'rosegarden/baseTemplate.html' %}
+
+{% block title %}Branches | Rose Garden{% endblock title%}
+
+{% block content%}
+    <h1>Branches in the Rose Garden</h1>
+
+    <table>
+        <tr> {# Header Row #}
+            <th>Name</th>
+            <th>Location</th>
+        </tr>
+        {% for branch in branch_list %}
+        <tr>
+            <td><a href="{% url 'rosegarden:branch_details' branch.pk %}">{{ branch.name}}</a></td>
+            <td>{{ branch.location }}</td>
+        </tr>
+        {% endfor %}
+    </table>
+{% endblock content%}

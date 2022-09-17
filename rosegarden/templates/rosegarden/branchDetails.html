@@ -1,0 +1,14 @@
+{% extends 'rosegarden/baseTemplate.html' %}
+
+{% block title %} {{ branch.name }} | Branch Details | Rose Garden {% endblock title%}
+
+{% block content%}
+    <h1>Branch details for <i>{{ branch.name }}</i></h1>
+
+    <ul>
+        <li>Name: {{ branch.name }}</li>
+        <li>Location: {{ branch.location }}</li>
+        <li>Branch Users: PLACEHOLDER FOR USERS LIST</li>
+    </ul>
+
+{% endblock content%}

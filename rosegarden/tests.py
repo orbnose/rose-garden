@@ -507,3 +507,21 @@ class BookDetailsPageTests(TestCase):
         self.assertContains(response, "The Republic")
         self.assertContains(response, "Plato")
         self.assertContains(response, "312")
+
+class BranchDetailsPageTests(TestCase):
+    def test_branchdetails(self):
+        branch = setup_and_save_valid_branch()
+        pk = branch.pk
+        response = self.client.get(reverse('rosegarden:branch_details', args=[pk]))
+        self.assertContains(response, "Name:")
+        self.assertContains(response, "Location:")
+        self.assertContains(response, "Branch Users:")
+        self.assertContains(response, "Home Branch")
+        self.assertContains(response, "Madison Wisconsin")
+
+class BranchListPageTests(TestCase):
+    def test_branchlist(self):
+        _ = setup_and_save_valid_branch()
+        response = self.client.get(reverse('rosegarden:branch_list'))
+        self.assertContains(response, "Home Branch")
+        self.assertContains(response, "Madison Wisconsin")

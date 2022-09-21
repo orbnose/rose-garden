@@ -8,18 +8,14 @@ author_regex = validators.RegexValidator(regex=r"^[A-z]+(([,.] |[ '-])[A-z]+)*(\
 
 ddc_regex = validators.RegexValidator(regex=r"^\d{3}(\.{1}\d{1,9})?$")
 
-class Book(models.Model):
-    title = models.CharField(max_length=200)
-    author_editor = models.CharField(max_length=60, validators=[author_regex])
-    ddc_number = models.CharField(max_length=13, validators=[ddc_regex])
-    is_literature = models.BooleanField()
-    is_biography = models.BooleanField()
-
 class Branch(models.Model):
     name = models.CharField(max_length=200)
     location = models.CharField(max_length=200)
 
-class Copy(models.Model):
-    version = models.CharField(max_length=200, blank=True)
+class Book(models.Model):
     branch = models.ForeignKey(to=Branch, on_delete=models.SET_NULL, null=True)
-    book = models.ForeignKey(to=Book, on_delete=models.CASCADE)
+    title = models.CharField(max_length=200)
+    author_editor = models.CharField(max_length=60, validators=[author_regex])
+    ddc_number = models.CharField(max_length=13, validators=[ddc_regex])
+    version = models.CharField(max_length=200, blank=True)
+    is_biography_or_memoir = models.BooleanField()

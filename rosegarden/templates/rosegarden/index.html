@@ -11,9 +11,7 @@
             <th>Author or Editor</th>
             <th>DDC number</th>
             <th>Category</th>
-            <th>Literature?</th>
-            <th>Biography?</th>
-            <th>Number of Copies</th>
+            <th>Home Branch</th>
         </tr>
         {% for book in book_list %}
         <tr>
@@ -21,9 +19,7 @@
             <td>{{ book.author_editor }}</td>
             <td>{{ book.ddc_number }}</td>
             <td>CATEGORY PLACEHOlDER</td>
-            <td>{{ book.is_literature }}</td>
-            <td>{{ book.is_biography }}</td>
-            <td>{{ book.copy_set.count }}</td>
+            <td>{{ book.branch.name }}</td>
         </tr>
         {% endfor %}
     </table>

@@ -10,24 +10,9 @@
         <li>Author or Editor: {{ book.author_editor }} </li>
         <li>DDC number: {{ book.ddc_number }}</li>
         <li>Category: HOLD FOR CATEGORY</li>
-        <li>Is this book fiction or literature?: {{ book.is_literature }}</li>
-        <li>Is this book fiction a biography?: {{ book.is_biography }}</li>
-        <li>Number of copies: {{ book.copy_set.count }} </li>
+        <li>Is this book a biography or memoir?: {{ book.is_biography_or_memoir }}</li>
+        <li>Home Branch: {{ book.branch.name }} </li>
 
     </ul>
 
-    <h2>Copies</h2>
-
-    <table>
-        <tr>
-            <th>Branch</th>
-            <th>Version</th>
-        </tr>
-        {% for copy in book.copy_set.all %}
-        <tr>
-            <td>{{ copy.branch.name }}</td>
-            <td>{{ copy.version}}</td>
-        </tr>
-        {% endfor %}
-    </table>
 {% endblock content%}

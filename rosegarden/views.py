@@ -28,5 +28,6 @@ def userDetails(request, username):
     content = 'User Page for ' + username
     return HttpResponse(content)
 
-def admin(request):
-    return HttpResponse('Admin Login')
+def add_book(request):
+    content = 'Add Book Page'
+    return HttpResponse(content)

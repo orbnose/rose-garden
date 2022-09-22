@@ -5,6 +5,7 @@
 {% block content%}
     <h1>Welcome to the Rose Garden library!</h1>
 
+    {% if book_list%}
     <table>
         <tr> {# Header Row #}
             <th>Title</th>
@@ -23,4 +24,8 @@
         </tr>
         {% endfor %}
     </table>
+    {% else %}
+    <p>There are currently no books in the library! Create a new book on the <i>Add Book</i> page.</p>
+    {% endif %}
+
 {% endblock content%}

@@ -29,4 +29,4 @@ class BranchUserProfile(models.Model):
 
     user = models.OneToOneField(settings.AUTH_USER_MODEL, on_delete=models.CASCADE)
     branch = models.ForeignKey(to=Branch, on_delete=models.SET_NULL, null=True)
-    interests = models.CharField(max_length=200)
+    interests = models.CharField(max_length=500, blank=True)

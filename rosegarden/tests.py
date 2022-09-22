@@ -292,3 +292,12 @@ class UserListPageTests(TestCase):
         _ = setup_valid_user(username='bob123')
         response = self.client.get(reverse('rosegarden:user_list'))
         self.assertNotContains(response, 'bob123')
+
+class UserDetailPageTests(TestCase):
+    def test_userdetails(self):
+        profile, _ = setup_valid_profile_and_branch()
+        username = profile.user.username
+        response = self.client.get(reverse('rosegarden:user_details', args=[username]))
+        self.assertContains(response, "ben ")
+        self.assertContains(response, "Home Branch")
+        self.assertContains(response, "sustainable agriculture")

@@ -1,7 +1,11 @@
 from django.shortcuts import render, get_object_or_404
 from django.http import HttpResponse
+from django.contrib.auth.models import User
+from django.contrib.auth.decorators import login_required
+
 from .models import Book, Branch, BranchUserProfile
 
+@login_required
 def homepage(request):
     context = {'book_list': Book.objects.all().order_by('title')}
     return render(request, 'rosegarden/index.html', context)
@@ -26,7 +30,13 @@ def userList(request):
     return render(request, 'rosegarden/userList.html', context)
 
 def userDetails(request, username):
-    content = 'User Page for ' + username
+    user = get_object_or_404(User, username=username)
+    profile = BranchUserProfile.objects.get(user=user)
+    context = {
+        'user': user,
+        'profile': profile,
+    }
+    return render(request, 'rosegarden/userDetails.html', context)
     return HttpResponse(content)
 
 def add_book(request):

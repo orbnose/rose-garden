@@ -1,6 +1,6 @@
 from django.shortcuts import render, get_object_or_404
 from django.http import HttpResponse
-from .models import Book, Branch
+from .models import Book, Branch, BranchUserProfile
 
 def homepage(request):
     context = {'book_list': Book.objects.all().order_by('title')}
@@ -22,7 +22,8 @@ def branchDetails(request, branch_pk):
     return render(request, 'rosegarden/branchDetails.html', {'branch': branch})
 
 def userList(request):
-    return HttpResponse('User List')
+    context = {'profile_list': BranchUserProfile.objects.all().order_by('user__username')}
+    return render(request, 'rosegarden/userList.html', context)
 
 def userDetails(request, username):
     content = 'User Page for ' + username

@@ -301,3 +301,8 @@ class UserDetailPageTests(TestCase):
         self.assertContains(response, "ben ")
         self.assertContains(response, "Home Branch")
         self.assertContains(response, "sustainable agriculture")
+
+class BookEditPageTests(TestCase):
+    def test_edit_book_does_not_exist(self):
+        response = self.client.get(reverse('rosegarden:edit_book', args=[1]))
+        self.assertEquals(response.status_code, 404)

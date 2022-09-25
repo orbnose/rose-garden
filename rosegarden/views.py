@@ -1,11 +1,11 @@
 from django.shortcuts import render, get_object_or_404
-from django.http import HttpResponse
+from django.http import HttpResponse, HttpResponseForbidden, HttpResponseRedirect
+from django.urls import reverse
 from django.contrib.auth.models import User
-from django.contrib.auth.decorators import login_required
 
 from .models import Book, Branch, BranchUserProfile
+from .forms import BookForm
 
-@login_required
 def homepage(request):
     context = {'book_list': Book.objects.all().order_by('title')}
     return render(request, 'rosegarden/index.html', context)
@@ -37,8 +37,32 @@ def userDetails(request, username):
         'profile': profile,
     }
     return render(request, 'rosegarden/userDetails.html', context)
-    return HttpResponse(content)
 
 def add_book(request):
     content = 'Add Book Page'
     return HttpResponse(content)
+
+def edit_book(request, book_pk):
+    book = get_object_or_404(Book, pk=book_pk)
+
+    if not request.user.is_authenticated:
+        return HttpResponseForbidden('forbidden')
+    
+    profile = BranchUserProfile.objects.get(user=request.user)
+    if not (profile.branch.pk == book.branch.pk):
+        return HttpResponseForbidden('forbidden')
+
+    if request.method == 'POST':
+        form = BookForm(request.POST, instance=book)
+
+        if form.is_valid():
+            form.save()
+            return HttpResponseRedirect(reverse('rosegarden:book_details', args=[book.pk]))
+    else:
+        form = BookForm(instance=book)
+    
+    context = {
+        'book': book,
+        'form': form,
+        }
+    return render(request, 'rosegarden/bookEdit.html', context)

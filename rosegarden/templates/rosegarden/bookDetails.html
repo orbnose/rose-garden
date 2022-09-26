@@ -5,6 +5,7 @@
 {% block content%}
     <h1><i>{{ book.title }}</i></h1>
     <h2>Available in the <i>{{book.branch.name}}</i> branch</h2>
+    {% if can_view_edit_button %}<h3><a href="{% url 'rosegarden:edit_book' book.pk %}">Click here to edit this book!</a></h3>{% endif %}
 
     <ul>
         <li>Title: {{ book.title }}</li>

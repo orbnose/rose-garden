@@ -248,6 +248,17 @@ class BranchModelTests(TestCase):
         with self.assertRaisesMessage(ValidationError, 'Ensure this value has at most 200 characters'):
             testbranch.full_clean()
 
+class BranchUserProfileModelTests(TestCase):
+    def test_profile_cannot_edit_book(self):
+        book, _ = setup_and_save_valid_book_and_branch()
+        profile, _ = setup_valid_profile_and_branch()
+        self.assertIs(profile.can_edit_book(book), False)
+    
+    def test_profile_can_edit_book(self):
+        book, branch = setup_and_save_valid_book_and_branch()
+        profile, _ = setup_valid_profile_and_user(branch=branch)
+        self.assertIs(profile.can_edit_book(book), True)
+
 class HomepageTests(TestCase):
     def test_homepage(self):
         _, branch = setup_and_save_valid_book_and_branch()
@@ -261,11 +272,25 @@ class HomepageTests(TestCase):
 class BookDetailsPageTests(TestCase):
     def test_bookdetails(self):
         book, _ = setup_and_save_valid_book_and_branch()
-        pk = book.pk
-        response = self.client.get(reverse('rosegarden:book_details', args=[pk]))
+        response = self.client.get(reverse('rosegarden:book_details', args=[book.pk]))
         self.assertContains(response, "The Republic")
         self.assertContains(response, "Plato")
         self.assertContains(response, "312")
+
+    def test_bookdetails_user_not_authenticated(self):
+        book, _ = setup_and_save_valid_book_and_branch()
+        response = self.client.get(reverse('rosegarden:book_details', args=[book.pk]))
+        self.assertNotContains(response, "Click here to edit this book")
+
+    def test_bookdetails_user_is_authenticated(self):
+        book, branch = setup_and_save_valid_book_and_branch()
+        setup_valid_profile_and_user(branch=branch)
+
+        if not self.client.login(username="ben", password="pass"):
+            raise ValueError('Test user login failed.')
+
+        response = self.client.get(reverse('rosegarden:book_details', args=[book.pk]))
+        self.assertContains(response, "Click here to edit this book")
 
 class BranchDetailsPageTests(TestCase):
     def test_branchdetails(self):

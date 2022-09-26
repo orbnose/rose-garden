@@ -6,14 +6,50 @@ from django.contrib.auth.models import User
 from .models import Book, Branch, BranchUserProfile
 from .forms import BookForm
 
-# -- Page Views -- 
+#______________________
+#-- Helper Functions --
+
+def get_user_branch_profile_from_request(request):
+    #return the user branch if it exists, otherwise return None
+
+    #User is not authenticated
+    if not request.user.is_authenticated:
+        return None
+    
+    #User does not have a profile
+    try:
+        profile = BranchUserProfile.objects.get(user=request.user)
+    except BranchUserProfile.DoesNotExist:
+        return None
+ 
+    #Profile does not point to a branch
+    if not profile.branch:
+        return None
+
+    return profile
+
+#_________________
+# -- Page Views --
+
 def homepage(request):
     context = {'book_list': Book.objects.all().order_by('title')}
     return render(request, 'rosegarden/index.html', context)
 
 def bookDetails(request, book_pk):
     book = get_object_or_404(Book, pk=book_pk)
-    return render(request, 'rosegarden/bookDetails.html', {'book': book})
+    profile = get_user_branch_profile_from_request(request)
+    
+    if not profile:
+        can_view_edit_button = False
+    else:
+        can_view_edit_button = profile.can_edit_book(book)
+    
+    context = {
+        'can_view_edit_button': can_view_edit_button,
+        'book': book
+    }
+
+    return render(request, 'rosegarden/bookDetails.html', context)
 
 def search(request):
     return render(request, 'rosegarden/search.html')
@@ -46,18 +82,11 @@ def add_book(request):
 def edit_book(request, book_pk):
     book = get_object_or_404(Book, pk=book_pk)
     
-    #User is not authenticated
-    if not request.user.is_authenticated:
+    profile = get_user_branch_profile_from_request(request)
+    if profile is None:
         return HttpResponseForbidden('forbidden')
 
-    #User does not point to a branch
-    try:
-        profile = BranchUserProfile.objects.get(user=request.user)
-    except BranchUserProfile.DoesNotExist:
-        return HttpResponseForbidden('forbidden')
-
-    #User branch does not match the book's branch
-    if not (profile.branch.pk == book.branch.pk):
+    if not profile.can_edit_book(book):
         return HttpResponseForbidden('forbidden')
 
     if request.method == 'POST':

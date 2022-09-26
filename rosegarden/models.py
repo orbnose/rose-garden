@@ -29,4 +29,13 @@ class BranchUserProfile(models.Model):
 
     user = models.OneToOneField(settings.AUTH_USER_MODEL, on_delete=models.CASCADE)
     branch = models.ForeignKey(to=Branch, on_delete=models.SET_NULL, null=True)
-    interests = models.CharField(max_length=500, blank=True)
+    interests = models.CharField(max_length=500, blank=True, null=True)
+
+    def can_edit_book(self, book):
+        if not book:
+            return False
+        
+        if not (self.branch.pk == book.branch.pk):
+            return False
+        
+        return True

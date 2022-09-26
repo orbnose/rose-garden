@@ -1,0 +1,14 @@
+{% extends 'rosegarden/baseTemplate.html' %}
+
+{% block title %}Adding a new book | Rose Garden{% endblock title%}
+
+{% block content%}
+    <h1>Adding a new book to the <i>{{profile.branch.name}}</i> branch...</h1>
+
+    <form action="{% url 'rosegarden:add_book' %}" method="post">
+        {% csrf_token %}
+        {{ form.as_p }}
+        <input type="submit" value="Save">
+    </form>
+
+{% endblock content%}

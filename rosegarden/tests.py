@@ -385,3 +385,28 @@ class BookEditPageTests(TestCase):
 
         response = self.client.get(reverse('rosegarden:edit_book', args=[book.pk]))
         self.assertEquals(response.status_code, 403)
+
+class BookAddPageTests(TestCase):
+    def test_add_book_user_not_authenticated(self):
+        response = self.client.get(reverse('rosegarden:add_book'))
+        self.assertEquals(response.status_code, 403)
+    
+    def test_add_book_user_is_authenticated(self):
+        _, _= setup_valid_profile_and_branch()
+
+        if not self.client.login(username="ben", password="pass"):
+            raise ValueError('Test user login failed.')
+
+        url = reverse('rosegarden:add_book')
+        form_html = '<form action="' + url + '" method="post">'
+        response = self.client.get(url)
+        self.assertContains(response, form_html)
+
+    def test_add_book_user_has_no_branch(self):
+        _, _ = setup_valid_profile_and_user()
+
+        if not self.client.login(username="ben", password="pass"):
+            raise ValueError('Test user login failed.')
+
+        response = self.client.get(reverse('rosegarden:add_book'))
+        self.assertEquals(response.status_code, 403)

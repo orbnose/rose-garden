@@ -76,8 +76,26 @@ def userDetails(request, username):
     return render(request, 'rosegarden/userDetails.html', context)
 
 def add_book(request):
-    content = 'Add Book Page'
-    return HttpResponse(content)
+    profile = get_user_branch_profile_from_request(request)
+    if profile is None:
+        return HttpResponseForbidden('forbidden')
+
+    if request.method== 'POST':
+        form = BookForm(request.POST)
+
+        if form.is_valid():
+            book = form.instance
+            book.branch = profile.branch
+            book.save()
+            return HttpResponseRedirect(reverse('rosegarden:book_details', args=[book.pk]))
+    else:
+        form = BookForm()
+    
+    context = {
+        'profile': profile,
+        'form': form,
+    }
+    return render(request, 'rosegarden/bookAdd.html', context)
 
 def edit_book(request, book_pk):
     book = get_object_or_404(Book, pk=book_pk)

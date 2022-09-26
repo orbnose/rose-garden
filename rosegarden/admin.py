@@ -5,7 +5,7 @@ from django.contrib.auth.models import User
 from .models import Branch, Book, BranchUserProfile
 
 class ProfileInline(admin.StackedInline):
-    # This calls follows admin  registration recommendations for a user profile per:
+    # This calls follows admin registration recommendations for a user profile per:
     #  https://docs.djangoproject.com/en/4.1/topics/auth/customizing/#extending-the-existing-user-model
 
     model = BranchUserProfile

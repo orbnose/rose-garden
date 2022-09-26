@@ -13,6 +13,9 @@ class Branch(models.Model):
     name = models.CharField(max_length=200)
     location = models.CharField(max_length=200)
 
+    def __str__(self):
+        return self.name
+
 class Book(models.Model):
     branch = models.ForeignKey(to=Branch, on_delete=models.SET_NULL, null=True)
     title = models.CharField(max_length=200)
@@ -20,6 +23,11 @@ class Book(models.Model):
     ddc_number = models.CharField(max_length=13, validators=[ddc_regex])
     version = models.CharField(max_length=200, blank=True)
     is_biography_or_memoir = models.BooleanField()
+
+    verbose_name_plural = 'books'
+    
+    def __str__(self):
+        return self.title
 
 class BranchUserProfile(models.Model):
     # This class is setup to track user settings specific to the rose garden app

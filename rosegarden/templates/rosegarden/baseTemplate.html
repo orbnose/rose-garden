@@ -14,8 +14,8 @@
             <a href="{% url 'rosegarden:search' %}">Search</a>
             <a href="{% url 'rosegarden:branch_list' %}">Branch List</a>
             <a href="{% url 'rosegarden:user_list' %}">User List</a>
-            <a href="{% url 'rosegarden:user_details' 'me' %}">My User Page</a>
-            {% if user.is_authenticated %}<a href="{% url 'rosegarden:add_book' %}">Add Book</a>{% endif %}
+            {% if user.is_authenticated %}<a href="{% url 'rosegarden:user_details' user.username %}">My User Page</a>
+            <a href="{% url 'rosegarden:add_book' %}">Add Book</a>{% endif %}
             <hr>
             {% endblock page_header%}
         </div>

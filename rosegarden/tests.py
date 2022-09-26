@@ -22,7 +22,7 @@ def setup_and_save_valid_book_and_branch():
     book = setup_and_save_valid_book(branch=branch)
     return book, branch
 
-def setup_valid_user(username="ben",password=None):
+def setup_valid_user(username="ben",password="pass"):
     user = User.objects.create_user(username=username, password=password)
     return user
 
@@ -30,6 +30,11 @@ def setup_and_save_profile(user=None, branch=None, interests=None):
     profile = BranchUserProfile(user=user, branch=branch, interests=interests)
     profile.save()
     return profile
+
+def setup_valid_profile_and_user(branch=None, interests=None):
+    user = setup_valid_user()
+    profile = setup_and_save_profile(user=user, branch=branch, interests=interests)
+    return profile, user
 
 def setup_valid_profile_and_branch():
     branch = setup_and_save_valid_branch()
@@ -306,3 +311,29 @@ class BookEditPageTests(TestCase):
     def test_edit_book_does_not_exist(self):
         response = self.client.get(reverse('rosegarden:edit_book', args=[1]))
         self.assertEquals(response.status_code, 404)
+    
+    def test_edit_book_not_authenticated(self):
+        book, _ = setup_and_save_valid_book_and_branch()
+        response = self.client.get(reverse('rosegarden:edit_book', args=[book.pk]))
+        self.assertEquals(response.status_code, 403)
+    
+    def test_edit_book_not_matching_branch(self):
+        book, _ = setup_and_save_valid_book()
+        branch2 = setup_and_save_valid_branch("Ben's Branch", "Nowhere KS")
+        _, _ = setup_valid_profile_and_user(branch=branch2, interests='farming')
+        
+        if not self.client.login(username="ben", password="pass"):
+            raise ValueError('Test user login failed.')
+
+        response = self.client.get(reverse('rosegarden:edit_book', args=[book.pk]))
+        self.assertEquals(response.status_code, 403)
+    
+    def test_edit_book_matching_branch(self):
+        _, branch = setup_valid_profile_and_branch
+        book = setup_and_save_valid_book(branch=branch)
+
+        if not self.client.login(username="ben", password="pass"):
+            raise ValueError('Test user login failed.')
+
+        response = self.client.get(reverse('rosegarden:edit_book', args=[book.pk]))
+        self.assertEquals(response.status_code, 200)

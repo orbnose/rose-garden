@@ -2,6 +2,7 @@ from django.shortcuts import render, get_object_or_404
 from django.http import HttpResponse, HttpResponseForbidden, HttpResponseRedirect
 from django.urls import reverse
 from django.contrib.auth.models import User
+from django.db.models import Q
 
 from .models import Book, Branch, BranchUserProfile
 from .forms import BookForm
@@ -121,3 +122,13 @@ def edit_book(request, book_pk):
         'form': form,
         }
     return render(request, 'rosegarden/bookEdit.html', context)
+
+def search(request):
+    query = request.GET.get("q")
+    if query:
+        book_list = Book.objects.filter(
+            Q(title__icontains=query) | Q(author_editor__icontains=query) | Q(branch__name__icontains=query) | Q(version__icontains=query) | Q(ddc_number__icontains=query)
+        )
+    else:
+        book_list = False
+    return render(request, 'rosegarden/search.html', {'book_list': book_list})

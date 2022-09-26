@@ -1,0 +1,37 @@
+{% extends 'rosegarden/baseTemplate.html' %}
+
+{% block title %}Search | Rose Garden Library{% endblock title%}
+
+{% block content%}
+    
+
+    {% if book_list%}
+    <h1>Search Results</h1>
+    <table>
+        <tr> {# Header Row #}
+            <th>Title</th>
+            <th>Author or Editor</th>
+            <th>DDC number</th>
+            <th>Category</th>
+            <th>Home Branch</th>
+        </tr>
+        {% for book in book_list %}
+        <tr>
+            <td><a href="{% url 'rosegarden:book_details' book.pk %}">{{ book.title }}</a></td>
+            <td>{{ book.author_editor }}</td>
+            <td>{{ book.ddc_number }}</td>
+            <td>CATEGORY PLACEHOlDER</td>
+            <td>{{ book.branch.name }}</td>
+        </tr>
+        {% endfor %}
+    </table>
+    {% else %}
+    <h1>Quick Search</h1>
+    <p>Keyword search in a book's title, author, version, branch, or DDC number fields.</p>
+    <form action="{% url 'rosegarden:search' %}" method="get">
+        <input name="q" type="text">
+        <input type="submit" value="Save">
+    </form>
+    {% endif %}
+
+{% endblock content%}

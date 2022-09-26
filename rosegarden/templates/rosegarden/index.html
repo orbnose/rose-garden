@@ -25,7 +25,8 @@
         {% endfor %}
     </table>
     {% else %}
-    <p>There are currently no books in the library! Create a new book on the <i>Add Book</i> page.</p>
+    <p>There are currently no books in the library!</p>
+    {% if user.is_authenticated %}<p>Create a new book on the <i>Add Book</i> page.<p>{% endif %}
     {% endif %}
 
 {% endblock content%}

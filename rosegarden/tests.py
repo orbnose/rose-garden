@@ -269,6 +269,19 @@ class HomepageTests(TestCase):
         self.assertContains(response, "The Republic")
         self.assertContains(response, html.escape("One Flew Over the Cuckoo's Nest") )
 
+    def test_add_book_link_user_not_authenticated(self):
+        response = self.client.get(reverse('rosegarden:index'))
+        self.assertNotContains(response, "Add Book")
+    
+    def test_add_book_link_user_is_authenticated(self):
+        _, _ = setup_valid_profile_and_branch()
+
+        if not self.client.login(username="ben", password="pass"):
+            raise ValueError('Test user login failed.')
+
+        response = self.client.get(reverse('rosegarden:index'))
+        self.assertContains(response, "Add Book")
+
 class BookDetailsPageTests(TestCase):
     def test_bookdetails(self):
         book, _ = setup_and_save_valid_book_and_branch()

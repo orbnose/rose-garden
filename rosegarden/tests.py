@@ -318,7 +318,7 @@ class BookEditPageTests(TestCase):
         self.assertEquals(response.status_code, 403)
     
     def test_edit_book_not_matching_branch(self):
-        book, _ = setup_and_save_valid_book()
+        book, _ = setup_and_save_valid_book_and_branch()
         branch2 = setup_and_save_valid_branch("Ben's Branch", "Nowhere KS")
         _, _ = setup_valid_profile_and_user(branch=branch2, interests='farming')
         
@@ -329,7 +329,7 @@ class BookEditPageTests(TestCase):
         self.assertEquals(response.status_code, 403)
     
     def test_edit_book_matching_branch(self):
-        _, branch = setup_valid_profile_and_branch
+        _, branch = setup_valid_profile_and_branch()
         book = setup_and_save_valid_book(branch=branch)
 
         if not self.client.login(username="ben", password="pass"):
@@ -337,3 +337,13 @@ class BookEditPageTests(TestCase):
 
         response = self.client.get(reverse('rosegarden:edit_book', args=[book.pk]))
         self.assertEquals(response.status_code, 200)
+    
+    def test_edit_book_no_user_branch(self):
+        book, _ = setup_and_save_valid_book_and_branch()
+        _ = setup_valid_user()
+
+        if not self.client.login(username="ben", password="pass"):
+            raise ValueError('Test user login failed.')
+
+        response = self.client.get(reverse('rosegarden:edit_book', args=[book.pk]))
+        self.assertEquals(response.status_code, 403)

@@ -6,6 +6,7 @@ from django.contrib.auth.models import User
 from .models import Book, Branch, BranchUserProfile
 from .forms import BookForm
 
+# -- Page Views -- 
 def homepage(request):
     context = {'book_list': Book.objects.all().order_by('title')}
     return render(request, 'rosegarden/index.html', context)
@@ -44,11 +45,18 @@ def add_book(request):
 
 def edit_book(request, book_pk):
     book = get_object_or_404(Book, pk=book_pk)
-
+    
+    #User is not authenticated
     if not request.user.is_authenticated:
         return HttpResponseForbidden('forbidden')
-    
-    profile = BranchUserProfile.objects.get(user=request.user)
+
+    #User does not point to a branch
+    try:
+        profile = BranchUserProfile.objects.get(user=request.user)
+    except BranchUserProfile.DoesNotExist:
+        return HttpResponseForbidden('forbidden')
+
+    #User branch does not match the book's branch
     if not (profile.branch.pk == book.branch.pk):
         return HttpResponseForbidden('forbidden')
 

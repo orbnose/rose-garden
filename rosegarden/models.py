@@ -29,6 +29,31 @@ class Book(models.Model):
     def __str__(self):
         return self.title
 
+    def get_category(self):
+        
+        #Keep only the hundreds place
+        ddc= int(float(self.ddc_number)/100)*100
+
+        categories = {
+            0:   'Computer science, information and general works',
+            100: 'Philosophy and psychology',
+            200: 'Religion',
+            300: 'Social sciences',
+            400: 'Language',
+            500: 'Science',
+            600: 'Technology',
+            700: 'Arts and recreation',
+            800: 'Literature',
+            900: 'History and geography',
+        }
+        
+        try:
+            cat = categories[ddc]
+        except KeyError:
+            return None
+
+        return cat
+
 class BranchUserProfile(models.Model):
     # This class is setup to track user settings specific to the rose garden app
     #  that are extensions of the base user class currently used for authentication

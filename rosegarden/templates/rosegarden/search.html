@@ -7,7 +7,7 @@
 
     {% if book_list%}
     <h1>Search Results</h1>
-    <table>
+    <table class="table table-striped">
         <tr> {# Header Row #}
             <th>Title</th>
             <th>Author or Editor</th>
@@ -20,7 +20,7 @@
             <td><a href="{% url 'rosegarden:book_details' book.pk %}">{{ book.title }}</a></td>
             <td>{{ book.author_editor }}</td>
             <td>{{ book.ddc_number }}</td>
-            <td>CATEGORY PLACEHOlDER</td>
+            <td>{{ book.get_category }}</td>
             <td>{{ book.branch.name }}</td>
         </tr>
         {% endfor %}
@@ -30,7 +30,7 @@
     <p>Keyword search in a book's title, author, version, branch, or DDC number fields.</p>
     <form action="{% url 'rosegarden:search' %}" method="get">
         <input name="q" type="text">
-        <input type="submit" value="Save">
+        <input type="submit" value="Search">
     </form>
     {% endif %}
 

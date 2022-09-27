@@ -11,7 +11,7 @@
         <li>Title: {{ book.title }}</li>
         <li>Author or Editor: {{ book.author_editor }} </li>
         <li>DDC number: {{ book.ddc_number }}</li>
-        <li>Category: HOLD FOR CATEGORY</li>
+        <li>Category: {{ book.get_category }}</li>
         <li>Is this book a biography or memoir?: {{ book.is_biography_or_memoir }}</li>
         <li>Home Branch: {{ book.branch.name }} </li>
 

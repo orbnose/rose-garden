@@ -6,7 +6,7 @@
     <h1>Welcome to the Rose Garden library!</h1>
 
     {% if book_list%}
-    <table>
+    <table class="table table-striped">
         <tr> {# Header Row #}
             <th>Title</th>
             <th>Author or Editor</th>
@@ -19,7 +19,7 @@
             <td><a href="{% url 'rosegarden:book_details' book.pk %}">{{ book.title }}</a></td>
             <td>{{ book.author_editor }}</td>
             <td>{{ book.ddc_number }}</td>
-            <td>CATEGORY PLACEHOlDER</td>
+            <td>{{ book.get_category }}</td>
             <td>{{ book.branch.name }}</td>
         </tr>
         {% endfor %}

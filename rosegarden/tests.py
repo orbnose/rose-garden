@@ -231,6 +231,31 @@ class BookModelTests(TestCase):
 
         with self.assertRaisesMessage(ValidationError, 'value must be either True or False'):
             testbook.full_clean()
+    
+
+    def test_get_category(self):
+        branch = setup_and_save_valid_branch()
+        book001 = setup_and_save_valid_book(branch=branch,ddc='001')
+        book101 = setup_and_save_valid_book(branch=branch,ddc='101')
+        book201 = setup_and_save_valid_book(branch=branch,ddc='201')
+        book301 = setup_and_save_valid_book(branch=branch,ddc='301')
+        book401 = setup_and_save_valid_book(branch=branch,ddc='401')
+        book501 = setup_and_save_valid_book(branch=branch,ddc='501')
+        book601 = setup_and_save_valid_book(branch=branch,ddc='601')
+        book701 = setup_and_save_valid_book(branch=branch,ddc='701')
+        book801 = setup_and_save_valid_book(branch=branch,ddc='801')
+        book901 = setup_and_save_valid_book(branch=branch,ddc='901')
+
+        self.assertEquals(book001.get_category(), "Computer science, information and general works")
+        self.assertEquals(book101.get_category(), "Philosophy and psychology")
+        self.assertEquals(book201.get_category(), "Religion")
+        self.assertEquals(book301.get_category(), "Social sciences")
+        self.assertEquals(book401.get_category(), "Language")
+        self.assertEquals(book501.get_category(), "Science")
+        self.assertEquals(book601.get_category(), "Technology")
+        self.assertEquals(book701.get_category(), "Arts and recreation")
+        self.assertEquals(book801.get_category(), "Literature")
+        self.assertEquals(book901.get_category(), "History and geography")
 
 class BranchModelTests(TestCase):
     def test_validator_valid_branch(self):

@@ -19,9 +19,10 @@ Quick start
 3. Include the polls URLconf in your project urls.py like this:
 
 ```
-    from django.urls import include
+urlpatterns = [
     ...
     path('rosegarden/', include('rosegarden.urls')),
+]
 ```
 
 4. Run ``python manage.py migrate`` to create the Rose Garden models.

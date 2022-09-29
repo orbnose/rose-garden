@@ -7,7 +7,7 @@ Quick start
 -----------
 1. Run python -m pip install git+https://github.com/orbnose/rose-garden#egg=rose-garden
 
-1. Add "rosegarden" to your INSTALLED_APPS setting like this:
+2. Add "rosegarden" to your INSTALLED_APPS setting like this:
 
 ```
     INSTALLED_APPS = [
@@ -16,7 +16,7 @@ Quick start
     ]
 ```
 
-2. Include the polls URLconf in your project urls.py like this:
+3. Include the polls URLconf in your project urls.py like this:
 
 ```
     from django.urls import include
@@ -24,4 +24,4 @@ Quick start
     path('rosegarden/', include('rosegarden.urls')),
 ```
 
-3. Run ``python manage.py migrate`` to create the Rose Garden models.
+4. Run ``python manage.py migrate`` to create the Rose Garden models.

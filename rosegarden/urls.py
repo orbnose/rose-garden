@@ -12,5 +12,6 @@ urlpatterns = [
     path('branches/<int:branch_pk>', views.branchDetails, name='branch_details'),
     path('users/', views.userList, name='user_list'),
     path('users/<str:username>',views.userDetails, name='user_details'),
-    path('add_book/', views.add_book, name='add_book')
+    path('users/<str:username>/edit/',views.userEdit, name='edit_user'),
+    path('add_book/', views.add_book, name='add_book'),
 ]

@@ -72,3 +72,7 @@ class BranchUserProfile(models.Model):
             return False
         
         return True
+    
+    def matches_request_user(self, request):
+        #Return True if the request user matches the user with this profile. Otherwise False.
+        return (request.user.username == self.user.username)

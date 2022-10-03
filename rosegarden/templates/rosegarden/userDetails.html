@@ -1,14 +1,17 @@
 {% extends 'rosegarden/baseTemplate.html' %}
 
-{% block title %} {{ user.username }} | User Details | Rose Garden {% endblock title%}
+{% block title %} {{ username }} | User Details | Rose Garden {% endblock title%}
 
 {% block content%}
-    <h1>User details for <i>{{ user.username }}</i></h1>
+    <h1>User details for <i>{{ username }}</i></h1>
 
     <ul>
-        <li>Full Name: {{ user.get_full_name }}</li>
+        <li>Full Name: {{ page_user.get_full_name }}</li>
         <li>Branch: <a href="{% url 'rosegarden:branch_details' profile.branch.pk %}">{{ profile.branch.name }}</a></li>
-        <li>Interests: {{ profile.interests }}</li>
+        <li>Interests
+            {% if matching_user %}<a href="{% url 'rosegarden:edit_user' username %}">(Edit)</a>{% endif %}:
+            <div class="ps-5">{{ profile.interests|linebreaks }}</div>
+        </li>
     </ul>
 
 {% endblock content%}

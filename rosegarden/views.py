@@ -5,7 +5,7 @@ from django.contrib.auth.models import User
 from django.db.models import Q
 
 from .models import Book, Branch, BranchUserProfile
-from .forms import BookForm
+from .forms import BookForm, UserProfileInterestsForm
 
 #______________________
 #-- Helper Functions --
@@ -70,11 +70,39 @@ def userList(request):
 def userDetails(request, username):
     user = get_object_or_404(User, username=username)
     profile = BranchUserProfile.objects.get(user=user)
+    matching_user = profile.matches_request_user(request)
     context = {
-        'user': user,
+        'page_user': user,
+        'username': username,
         'profile': profile,
+        'matching_user': matching_user,
     }
     return render(request, 'rosegarden/userDetails.html', context)
+
+def userEdit(request, username):
+    page_user = get_object_or_404(User, username=username)
+    page_profile = BranchUserProfile.objects.get(user=page_user)
+
+    if page_profile is None:
+        return HttpResponseForbidden('forbidden')
+    
+    if not page_profile.matches_request_user(request):
+        return HttpResponseForbidden('forbidden')
+    
+    if request.method == 'POST':
+        form = UserProfileInterestsForm(request.POST, instance=page_profile)
+
+        if form.is_valid():
+            form.save()
+            return HttpResponseRedirect(reverse('rosegarden:user_details', args=[username]))
+    else:
+        form = UserProfileInterestsForm(instance=page_profile)
+    
+    context = {
+        'username': username,
+        'form': form,
+    }
+    return render(request, 'rosegarden/userEdit.html', context)
 
 def add_book(request):
     profile = get_user_branch_profile_from_request(request)
@@ -127,7 +155,11 @@ def search(request):
     query = request.GET.get("q")
     if query:
         book_list = Book.objects.filter(
-            Q(title__icontains=query) | Q(author_editor__icontains=query) | Q(branch__name__icontains=query) | Q(version__icontains=query) | Q(ddc_number__icontains=query)
+            Q(title__icontains=query) | 
+            Q(author_editor__icontains=query) | 
+            Q(branch__name__icontains=query) | 
+            Q(version__icontains=query) | 
+            Q(ddc_number__icontains=query)
         )
     else:
         book_list = False

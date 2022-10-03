@@ -1,0 +1,21 @@
+{% extends 'rosegarden/baseTemplate.html' %}
+
+{% block title %} {{ username }} | Editing Interests | Rose Garden {% endblock title%}
+
+{% block content%}
+    <h1>Editing User interests for <i>{{ username }}</i></h1>
+
+    <form action="{% url 'rosegarden:edit_user' username %}" method="post">
+        {% csrf_token %}
+        {{ form.non_field_errors }}
+        <p>
+            {{ form.interests.errors }}
+            {{ form.interests.label_tag }}
+        </p>
+        <p>
+            {{ form.interests }}
+        </p>
+        <input type="submit" value="Save">
+    </form>
+
+{% endblock content%}

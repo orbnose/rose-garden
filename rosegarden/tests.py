@@ -362,19 +362,51 @@ class UserListPageTests(TestCase):
         self.assertNotContains(response, 'bob123')
 
 class UserDetailPageTests(TestCase):
-    def test_userdetails(self):
+    def test_userdetails_not_logged_in(self):
         profile, _ = setup_valid_profile_and_branch()
         username = profile.user.username
         response = self.client.get(reverse('rosegarden:user_details', args=[username]))
         self.assertContains(response, "ben ")
         self.assertContains(response, "Home Branch")
         self.assertContains(response, "sustainable agriculture")
+        self.assertNotContains(response, "(Edit)")
+    
+    def test_userdetails_logged_in_viewing_different_user(self):
+        profile, _ = setup_valid_profile_and_branch()
+        username = profile.user.username
+        setup_valid_user(username='zaphod',password='pass1')
+
+        if not self.client.login(username="zaphod", password="pass1"):
+            raise ValueError('Test user login failed.')
+
+        response = self.client.get(reverse('rosegarden:user_details', args=[username]))
+        self.assertContains(response, "ben ")
+        self.assertContains(response, "Home Branch")
+        self.assertContains(response, "sustainable agriculture")
+        self.assertNotContains(response, "(Edit)")
+
+        #check that My User Page points to the login user, even when viewing a different user's page
+        url = reverse('rosegarden:user_details', args=['zaphod'])
+        self.assertContains(response, url+'">My User Page</a>')
+    
+    def test_userdetails_logged_in_viewing_own_user(self):
+        profile, _ = setup_valid_profile_and_branch()
+        username = profile.user.username
+
+        if not self.client.login(username="ben", password="pass"):
+            raise ValueError('Test user login failed.')
+
+        response = self.client.get(reverse('rosegarden:user_details', args=[username]))
+        self.assertContains(response, "ben ")
+        self.assertContains(response, "Home Branch")
+        self.assertContains(response, "sustainable agriculture")
+        self.assertContains(response, "(Edit)")
 
 class BookEditPageTests(TestCase):
     def test_edit_book_does_not_exist(self):
         response = self.client.get(reverse('rosegarden:edit_book', args=[1]))
         self.assertEquals(response.status_code, 404)
-    
+
     def test_edit_book_not_authenticated(self):
         book, _ = setup_and_save_valid_book_and_branch()
         response = self.client.get(reverse('rosegarden:edit_book', args=[book.pk]))
@@ -410,6 +442,40 @@ class BookEditPageTests(TestCase):
 
         response = self.client.get(reverse('rosegarden:edit_book', args=[book.pk]))
         self.assertEquals(response.status_code, 403)
+
+class UserDetailsEditPageTests(TestCase):
+    def test_edit_userdetails_does_not_exist(self):
+        username = 'userdoesnotexist'
+        response = self.client.get(reverse('rosegarden:edit_user', args=[username]))
+        self.assertEquals(response.status_code, 404)
+    
+    def test_edit_userdetails_not_authenticated(self):
+        profile, _ = setup_valid_profile_and_user()
+        username = profile.user.username
+        response = self.client.get(reverse('rosegarden:edit_user', args=[username]))
+        self.assertEquals(response.status_code, 403)
+    
+    def test_edit_userdetails_not_matching_user(self):
+        
+        #creating user ben
+        profile, _ = setup_valid_profile_and_user()
+        username = profile.user.username
+
+        setup_valid_user(username='zaphod', password='pass1')
+        if not self.client.login(username="zaphod", password="pass1"):
+            raise ValueError('Test user login failed.')
+        
+        response = self.client.get(reverse('rosegarden:edit_user', args=[username]))
+        self.assertEquals(response.status_code, 403)
+    
+    def test_edit_userdetails_matching_user(self):
+        profile, _ = setup_valid_profile_and_user()
+        username = profile.user.username
+        if not self.client.login(username="ben", password="pass"):
+            raise ValueError('Test user login failed.')
+
+        response = self.client.get(reverse('rosegarden:edit_user', args=[username]))
+        self.assertEquals(response.status_code, 200)
 
 class BookAddPageTests(TestCase):
     def test_add_book_user_not_authenticated(self):

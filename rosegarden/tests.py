@@ -6,13 +6,14 @@ from django.contrib.auth.models import User
 import html
 
 from .models import Book, Branch, BranchUserProfile
+from .views import quicksearch_books, fullsearch_books
 
 def setup_and_save_valid_branch(name="Home Branch", location="Madison Wisconsin"):
     branch = Branch(name=name, location=location)
     branch.save()
     return branch
 
-def setup_and_save_valid_book(branch=None, title="The Republic", author="Plato", ddc=312, is_bio=False):
+def setup_and_save_valid_book(branch=None, title="The Republic", author="Plato", ddc='312', is_bio=False):
     book = Book(branch=branch, title=title, author_editor=author, ddc_number=ddc, is_biography_or_memoir=is_bio)
     book.save()
     return book
@@ -41,6 +42,35 @@ def setup_valid_profile_and_branch():
     user = setup_valid_user()
     profile = setup_and_save_profile(user=user, branch=branch, interests='sustainable agriculture')
     return profile, branch
+
+def setup_test_book_list():
+    branch1 = setup_and_save_valid_branch()
+    branch2 = setup_and_save_valid_branch(name="Basement Books", location="Nowhere KS")
+    books = [
+        setup_and_save_valid_book(branch=branch1, title='book1-001', author='author1-001', ddc='001'),
+        setup_and_save_valid_book(branch=branch1, title='book1-101', author='author1-101', ddc='101'),
+        setup_and_save_valid_book(branch=branch1, title='book1-201', author='author1-201', ddc='201'),
+        setup_and_save_valid_book(branch=branch1, title='book1-301', author='author1-301', ddc='301'),
+        setup_and_save_valid_book(branch=branch1, title='book1-401', author='author1-401', ddc='401'),
+        setup_and_save_valid_book(branch=branch1, title='book1-501', author='author1-501', ddc='501'),
+        setup_and_save_valid_book(branch=branch1, title='book1-601', author='author1-601', ddc='601'),
+        setup_and_save_valid_book(branch=branch1, title='book1-701', author='author1-701', ddc='701'),
+        setup_and_save_valid_book(branch=branch1, title='book1-801', author='author1-801', ddc='801'),
+        setup_and_save_valid_book(branch=branch1, title='book1-901', author='author1-901', ddc='901'),
+        setup_and_save_valid_book(branch=branch1, title='book1-bio', author='author1-901', ddc='921', is_bio=True),
+        setup_and_save_valid_book(branch=branch2, title='book2-001', author='author1-001', ddc='001'),
+        setup_and_save_valid_book(branch=branch2, title='book2-101', author='author1-101', ddc='101'),
+        setup_and_save_valid_book(branch=branch2, title='book2-201', author='author1-201', ddc='201'),
+        setup_and_save_valid_book(branch=branch2, title='book2-301', author='author1-301', ddc='301'),
+        setup_and_save_valid_book(branch=branch2, title='book2-401', author='author1-401', ddc='401'),
+        setup_and_save_valid_book(branch=branch2, title='book2-501', author='author1-501', ddc='501'),
+        setup_and_save_valid_book(branch=branch2, title='book2-601', author='author1-601', ddc='601'),
+        setup_and_save_valid_book(branch=branch2, title='book2-701', author='author1-701', ddc='701'),
+        setup_and_save_valid_book(branch=branch2, title='book2-801', author='author1-801', ddc='801'),
+        setup_and_save_valid_book(branch=branch2, title='book2-901', author='author2-901', ddc='901'),
+        setup_and_save_valid_book(branch=branch2, title='book2-bio', author='author2-901', ddc='921', is_bio=True),
+    ]
+    return books
 
 class BookModelTests(TestCase):
 
@@ -501,3 +531,427 @@ class BookAddPageTests(TestCase):
 
         response = self.client.get(reverse('rosegarden:add_book'))
         self.assertEquals(response.status_code, 403)
+
+class SearchTests(TestCase):
+    def setUp(self):
+        setup_test_book_list()
+    
+    def test_fullsearch_or_title_author(self):   
+        querydict = {
+            'f': 'any',
+            'title': 'book1-001',
+            'author': 'author1-101',
+            'ddcmin': '',
+            'ddcmax': '',
+            'cat': '',
+            'bio': '',
+            'branch': '',
+        }
+        book_titles = sorted([book.title for book in fullsearch_books(querydict)])
+        target = ['book1-001','book1-101','book2-101']
+        self.assertEquals(target, book_titles)
+
+    def test_fullsearch_or_title_ddcmin(self):
+        querydict = {
+            'f': 'any',
+            'title': 'book1-001',
+            'author': '',
+            'ddcmin': '800',
+            'ddcmax': '',
+            'cat': '',
+            'bio': '',
+            'branch': '',
+        }
+        book_titles = sorted([book.title for book in fullsearch_books(querydict)])
+        target = ['book1-001','book1-801','book1-901','book1-bio','book2-801','book2-901','book2-bio']
+        self.assertEquals(target, book_titles)
+    
+    def test_fullsearch_or_title_ddcmax(self):
+        querydict = {
+            'f': 'any',
+            'title': 'book1-001',
+            'author': '',
+            'ddcmin': '',
+            'ddcmax': '199',
+            'cat': '',
+            'bio': '',
+            'branch': '',
+        }
+        book_titles = sorted([book.title for book in fullsearch_books(querydict)])
+        target = ['book1-001','book1-101','book2-001','book2-101']
+        self.assertEquals(target, book_titles)
+    
+    def test_fullsearch_or_title_category(self):
+        querydict = {
+            'f': 'any',
+            'title': 'book1-001',
+            'author': '',
+            'ddcmin': '',
+            'ddcmax': '',
+            'cat': '400',
+            'bio': '',
+            'branch': '',
+        }
+        book_titles = sorted([book.title for book in fullsearch_books(querydict)])
+        target = ['book1-001','book1-401','book2-401']
+        self.assertEquals(target, book_titles)
+    
+    def test_fullsearch_or_title_bio(self):
+        querydict = {
+            'f': 'any',
+            'title': 'book1-001',
+            'author': '',
+            'ddcmin': '',
+            'ddcmax': '',
+            'cat': '',
+            'bio': 'True',
+            'branch': '',
+        }
+        book_titles = sorted([book.title for book in fullsearch_books(querydict)])
+        target = ['book1-001','book1-bio','book2-bio']
+        self.assertEquals(target, book_titles)
+    
+    def test_fullsearch_or_title_branch(self):
+        querydict = {
+            'f': 'any',
+            'title': 'book1-001',
+            'author': '',
+            'ddcmin': '',
+            'ddcmax': '',
+            'cat': '',
+            'bio': '',
+            'branch': Branch.objects.get(pk=2),
+        }
+        book_titles = sorted([book.title for book in fullsearch_books(querydict)])
+        target = ['book1-001','book2-001','book2-101','book2-201','book2-301','book2-401','book2-501','book2-601','book2-701','book2-801','book2-901','book2-bio']
+        self.assertEquals(target, book_titles)
+    
+    def test_fullsearch_or_author_ddcmin(self):
+        querydict = {
+            'f': 'any',
+            'title': '',
+            'author': 'author1-001',
+            'ddcmin': '900',
+            'ddcmax': '',
+            'cat': '',
+            'bio': '',
+            'branch': '',
+        }
+        book_titles = sorted([book.title for book in fullsearch_books(querydict)])
+        target = sorted(['book1-001','book2-001','book1-901','book1-bio','book2-901','book2-bio'])
+        self.assertEquals(target, book_titles)
+    
+    def test_fullsearch_or_author_ddcmax(self):
+        querydict = {
+            'f': 'any',
+            'title': '',
+            'author': 'author1-001',
+            'ddcmin': '',
+            'ddcmax': '200.1',
+            'cat': '',
+            'bio': '',
+            'branch': '',
+        }
+        book_titles = sorted([book.title for book in fullsearch_books(querydict)])
+        target = sorted(['book1-001','book2-001','book1-101','book2-101'])
+        self.assertEquals(target, book_titles)
+    
+    def test_fullsearch_or_author_cat(self):
+        querydict = {
+            'f': 'any',
+            'title': '',
+            'author': 'author1-001',
+            'ddcmin': '',
+            'ddcmax': '',
+            'cat': '300',
+            'bio': '',
+            'branch': '',
+        }
+        book_titles = sorted([book.title for book in fullsearch_books(querydict)])
+        target = sorted(['book1-001','book2-001','book1-301','book2-301'])
+        self.assertEquals(target, book_titles)
+
+    def test_fullsearch_or_author_bio(self):
+        querydict = {
+            'f': 'any',
+            'title': '',
+            'author': 'author1-001',
+            'ddcmin': '',
+            'ddcmax': '',
+            'cat': '',
+            'bio': 'True',
+            'branch': '',
+        }
+        book_titles = sorted([book.title for book in fullsearch_books(querydict)])
+        target = sorted(['book1-001','book2-001','book1-bio','book2-bio'])
+        self.assertEquals(target, book_titles)
+    
+    def test_fullsearch_or_author_branch(self):
+        querydict = {
+            'f': 'any',
+            'title': '',
+            'author': 'author1-001',
+            'ddcmin': '',
+            'ddcmax': '',
+            'cat': '',
+            'bio': '',
+            'branch': Branch.objects.get(pk=2),
+        }
+        book_titles = sorted([book.title for book in fullsearch_books(querydict)])
+        target = sorted(['book1-001','book2-001','book2-101','book2-201','book2-301','book2-401','book2-501','book2-601','book2-701','book2-801','book2-901','book2-bio'])
+        self.assertEquals(target, book_titles)
+    
+    def test_fullsearch_or_ddcmin_ddcmax(self):
+        querydict = {
+            'f': 'any',
+            'title': '',
+            'author': '',
+            'ddcmin': '199.9',
+            'ddcmax': '505.135',
+            'cat': '',
+            'bio': '',
+            'branch': '',
+        }
+        book_titles = sorted([book.title for book in fullsearch_books(querydict)])
+        target = sorted(['book1-201','book1-301','book1-401','book1-501','book2-201','book2-301','book2-401','book2-501'])
+        self.assertEquals(target, book_titles)
+
+    def test_fullsearch_or_ddcmin_cat(self):
+        # Category takes prevelance over DDC range
+        querydict = {
+            'f': 'any',
+            'title': '',
+            'author': '',
+            'ddcmin': '902',
+            'ddcmax': '',
+            'cat': '800',
+            'bio': '',
+            'branch': '',
+        }
+        book_titles = sorted([book.title for book in fullsearch_books(querydict)])
+        target = sorted(['book1-801','book2-801'])
+        self.assertEquals(target, book_titles)
+    
+    def test_fullsearch_or_ddcmin_bio(self):
+        querydict = {
+            'f': 'any',
+            'title': '',
+            'author': '',
+            'ddcmin': '899.123123123',
+            'ddcmax': '',
+            'cat': '',
+            'bio': 'True',
+            'branch': '',
+        }
+        book_titles = sorted([book.title for book in fullsearch_books(querydict)])
+        target = sorted(['book1-901','book2-901','book1-bio','book2-bio'])
+        self.assertEquals(target, book_titles)
+
+    def test_fullsearch_or_ddcmin_branch(self):
+        querydict = {
+            'f': 'any',
+            'title': '',
+            'author': '',
+            'ddcmin': '899.123123123',
+            'ddcmax': '',
+            'cat': '',
+            'bio': '',
+            'branch': Branch.objects.get(pk=1),
+        }
+        book_titles = sorted([book.title for book in fullsearch_books(querydict)])
+        target = sorted(['book1-901','book2-901','book1-bio','book2-bio','book1-001','book1-101','book1-201','book1-301','book1-401','book1-501','book1-601','book1-701','book1-801'])
+        self.assertEquals(target, book_titles)
+    
+    def test_fullsearch_or_ddcmax_cat(self):
+        # Category search takes prevelance over DDC range
+        querydict = {
+            'f': 'any',
+            'title': '',
+            'author': '',
+            'ddcmin': '',
+            'ddcmax': '002.345',
+            'cat': '700',
+            'bio': '',
+            'branch': '',
+        }
+        book_titles = sorted([book.title for book in fullsearch_books(querydict)])
+        target = sorted(['book1-701','book2-701'])
+        self.assertEquals(target, book_titles)
+
+    def test_fullsearch_or_ddcmax_bio(self):
+        querydict = {
+            'f': 'any',
+            'title': '',
+            'author': '',
+            'ddcmin': '',
+            'ddcmax': '002.345',
+            'cat': '',
+            'bio': 'True',
+            'branch': '',
+        }
+        book_titles = sorted([book.title for book in fullsearch_books(querydict)])
+        target = sorted(['book1-001','book2-001','book1-bio','book2-bio'])
+        self.assertEquals(target, book_titles)
+    
+    def test_fullsearch_or_ddcmax_branch(self):
+        querydict = {
+            'f': 'any',
+            'title': '',
+            'author': '',
+            'ddcmin': '',
+            'ddcmax': '002.345',
+            'cat': '',
+            'bio': '',
+            'branch': Branch.objects.get(pk=2),
+        }
+        book_titles = sorted([book.title for book in fullsearch_books(querydict)])
+        target = sorted(['book1-001','book2-001','book2-101','book2-201','book2-301','book2-401','book2-501','book2-601','book2-701','book2-801','book2-901','book2-bio'])
+        self.assertEquals(target, book_titles)
+    
+    def test_fullsearch_or_cat_bio(self):
+        querydict = {
+            'f': 'any',
+            'title': '',
+            'author': '',
+            'ddcmin': '',
+            'ddcmax': '',
+            'cat': '200',
+            'bio': 'True',
+            'branch': '',
+        }
+        book_titles = sorted([book.title for book in fullsearch_books(querydict)])
+        target = sorted(['book1-201','book2-201','book1-bio','book2-bio'])
+        self.assertEquals(target, book_titles)
+    
+    def test_fullsearch_or_cat_branch(self):
+        querydict = {
+            'f': 'any',
+            'title': '',
+            'author': '',
+            'ddcmin': '',
+            'ddcmax': '',
+            'cat': '200',
+            'bio': '',
+            'branch': Branch.objects.get(pk=2),
+        }
+        book_titles = sorted([book.title for book in fullsearch_books(querydict)])
+        target = sorted(['book1-201','book2-001','book2-101','book2-201','book2-301','book2-401','book2-501','book2-601','book2-701','book2-801','book2-901','book2-bio'])
+        self.assertEquals(target, book_titles)
+    
+    def test_fullsearch_or_bio_branch(self):
+        querydict = {
+            'f': 'any',
+            'title': '',
+            'author': '',
+            'ddcmin': '',
+            'ddcmax': '',
+            'cat': '',
+            'bio': 'True',
+            'branch': Branch.objects.get(pk=2),
+        }
+        book_titles = sorted([book.title for book in fullsearch_books(querydict)])
+        target = sorted(['book1-bio','book2-001','book2-101','book2-201','book2-301','book2-401','book2-501','book2-601','book2-701','book2-801','book2-901','book2-bio'])
+        self.assertEquals(target, book_titles)
+    
+    def test_fullsearch_and_title_in_ddcrange(self):
+        querydict = {
+            'f': 'all',
+            'title': 'book1',
+            'author': '',
+            'ddcmin': '199.8',
+            'ddcmax': '400.1',
+            'cat': '',
+            'bio': '',
+            'branch': '',
+        }
+        book_titles = sorted([book.title for book in fullsearch_books(querydict)])
+        target = sorted(['book1-201','book1-301'])
+        self.assertEquals(target, book_titles)
+    
+    def test_fullsearch_and_title_out_ddcrange(self):
+        querydict = {
+            'f': 'all',
+            'title': 'book1-101',
+            'author': '',
+            'ddcmin': '199.8',
+            'ddcmax': '400.1',
+            'cat': '',
+            'bio': '',
+            'branch': '',
+        }
+        book_titles = sorted([book.title for book in fullsearch_books(querydict)])
+        self.assertEquals([], book_titles)
+    
+    def test_fullsearch_and_author_bio(self):
+        querydict = {
+            'f': 'all',
+            'title': '',
+            'author': 'author1',
+            'ddcmin': '',
+            'ddcmax': '',
+            'cat': '',
+            'bio': 'True',
+            'branch': '',
+        }
+        book_titles = sorted([book.title for book in fullsearch_books(querydict)])
+        target = sorted(['book1-bio'])
+        self.assertEquals(target, book_titles)
+    
+    def test_fullsearch_and_author_branch(self):
+        querydict = {
+            'f': 'all',
+            'title': '',
+            'author': 'author2',
+            'ddcmin': '',
+            'ddcmax': '',
+            'cat': '',
+            'bio': '',
+            'branch': Branch.objects.get(pk=2),
+        }
+        book_titles = sorted([book.title for book in fullsearch_books(querydict)])
+        target = sorted(['book2-901','book2-bio'])
+        self.assertEquals(target, book_titles)
+    
+    def test_fullsearch_and_cat_branch(self):
+        querydict = {
+            'f': 'all',
+            'title': '',
+            'author': '',
+            'ddcmin': '',
+            'ddcmax': '',
+            'cat': '900',
+            'bio': '',
+            'branch': Branch.objects.get(pk=1),
+        }
+        book_titles = sorted([book.title for book in fullsearch_books(querydict)])
+        target = sorted(['book1-901','book1-bio'])
+        self.assertEquals(target, book_titles)
+    
+    def test_quicksearch_page(self):
+        query = '?q=book1'
+        url = reverse('rosegarden:search') + query
+        response = self.client.get(url)
+        self.assertContains(response, 'book1-001')
+        self.assertContains(response, 'book1-101')
+        self.assertContains(response, 'book1-201')
+        self.assertContains(response, 'book1-301')
+        self.assertContains(response, 'book1-401')
+        self.assertContains(response, 'book1-501')
+        self.assertContains(response, 'book1-601')
+        self.assertContains(response, 'book1-701')
+        self.assertContains(response, 'book1-801')
+        self.assertContains(response, 'book1-901')
+        self.assertContains(response, 'book1-bio')
+    
+    def test_fullsearch_page(self):
+        query = '?f=all&title=book1&cat=000'
+        url = reverse('rosegarden:search') + query
+        response = self.client.get(url)
+        self.assertContains(response, 'book1-001')
+        self.assertNotContains(response, 'book1-101')
+    
+    def test_fullsearch_page_not_found(self):
+        query = '?f=any&title=aliens'
+        url = reverse('rosegarden:search') + query
+        response = self.client.get(url)
+        self.assertContains(response, 'No Results Found')

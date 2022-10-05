@@ -187,7 +187,6 @@ def fullsearch_books(querydict):
         category = "zero"
 
     if category:
-        print("\n\nHit category resolver")
         if category == "zero":
             ddcmin = "000.000000001"
             ddcmax = "099.999999999"
@@ -215,8 +214,6 @@ def fullsearch_books(querydict):
         else:
             query &= condition
     
-    print("\n\nQuery:")
-    print(query)
     return Book.objects.filter(query)
 
 def search(request):

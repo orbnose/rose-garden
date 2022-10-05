@@ -5,7 +5,12 @@
 {% block content%}
     
 
-    {% if book_list%}
+    {% if no_results_flag %}
+    <h1>No Results Found</h1>
+    <hr>
+    {% endif %}
+    
+    {% if book_list %}
     <h1>Search Results</h1>
     <table class="table table-striped">
         <tr> {# Header Row #}
@@ -25,13 +30,22 @@
         </tr>
         {% endfor %}
     </table>
-    {% else %}
-    <h1>Quick Search</h1>
+    <hr>
+    {% endif %}
+
+    
+    <h2>Quick Search</h2>
     <p>Keyword search in a book's title, author, version, branch, or DDC number fields.</p>
     <form action="{% url 'rosegarden:search' %}" method="get">
-        <input name="q" type="text">
+        {{ quicksearch_form.as_p }}
         <input type="submit" value="Search">
     </form>
-    {% endif %}
+   
+    <h2>Advanced Search</h2>
+    <p>Note that the category filter takes precedence over the dewey decimal range filter if both are present.</p>
+    <form action="{% url 'rosegarden:search' %}" method="get">
+        {{ fullsearch_form.as_p }}
+        <input type="submit" value="Search">
+    </form>
 
 {% endblock content%}

@@ -1,6 +1,7 @@
 from django.db import models
 from django.conf import settings
 from django.core import validators
+from django.db.models import Q
 
 author_regex = validators.RegexValidator(regex=r"^[A-z]+(([,.] |[ '-])[A-z]+)*(\.?)( [IVXLCDM]+)?$")
 # Slightly modified version of Aman Godara's choice 3 from https://stackoverflow.com/questions/2385701/regular-expression-for-first-and-last-name
@@ -32,7 +33,7 @@ class Book(models.Model):
     def get_category(self):
         
         #Keep only the hundreds place
-        ddc= int(float(self.ddc_number)/100)*100
+        ddc = int(float(self.ddc_number)/100)*100
 
         categories = {
             0:   'Computer science, information and general works',

@@ -15,6 +15,11 @@
                 {% block page_header %}
                 <h1>Rose Garden Library</h1>
                 
+                {# Load in the LOGOUT_URL from the project's settings.py #}
+                {% load settings_tag %}
+                {% settings_value 'LOGOUT_URL' as LOGOUT_URL %}
+
+                {# Display the navigation bar #}
                 <nav class="navbar">
                     <a class="nav-link" href="{% url 'rosegarden:index' %}">Home</a>
                     <a class="nav-link" href="{% url 'rosegarden:search' %}">Search</a>
@@ -23,6 +28,7 @@
                     {% if user.is_authenticated %}
                     <a class="nav-link" href="{% url 'rosegarden:user_details' user.username %}">My User Page</a>
                     <a class="nav-link" href="{% url 'rosegarden:add_book' %}">Add Book</a>
+                    <a class="nav-link" href="{% url LOGOUT_URL %}">Log Out</a>
                     {% endif %}
                 </nav>
                 <hr>
@@ -38,7 +44,7 @@
             <div id="page_footer">
                 {% block page_footer%}
                 <hr>
-                <h1>Rose Garden Footer</h1>
+                <small>&copy; Copyright {% now "Y"%}, Benjamin Roos</small>
                 {% endblock page_footer%}
             </div>
 

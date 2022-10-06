@@ -1,3 +1,4 @@
+from email.policy import default
 from django.db import models
 from django.conf import settings
 from django.core import validators
@@ -18,15 +19,20 @@ class Branch(models.Model):
         return self.name
 
 class Book(models.Model):
-    branch = models.ForeignKey(to=Branch, on_delete=models.SET_NULL, null=True)
+
+    # --- Book Fields
+    branch = models.ForeignKey(to=Branch, on_delete=models.SET_NULL, null=True, blank=True)
     title = models.CharField(max_length=200)
     author_editor = models.CharField(max_length=60, validators=[author_regex])
     ddc_number = models.CharField(max_length=13, validators=[ddc_regex])
     version = models.CharField(max_length=200, blank=True)
-    is_biography_or_memoir = models.BooleanField()
+    is_biography_or_memoir = models.BooleanField(default=False)
+    is_deleted = models.BooleanField(default=False)
 
+    # --- Book attributes
     verbose_name_plural = 'books'
     
+    # --- Book methods
     def __str__(self):
         return self.title
 

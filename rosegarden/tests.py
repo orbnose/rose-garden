@@ -19,6 +19,21 @@ def setup_and_save_valid_book(branch=None, title="The Republic", author="Plato",
     book.save()
     return book
 
+def setup_orphaned_book(title='Orphaned Book', author='Orphaned Author', ddc='100'):
+    book = Book(branch=None, title=title, author_editor=author, ddc_number=ddc)
+    book.save()
+    return book
+
+def setup_deleted_book(title='Deleted Book', author='Deleted Author', ddc='100'):
+    branch = setup_and_save_valid_branch(name='Deleted Branch', location='Nowhere KS')
+    book = Book(branch=branch, title=title, author=author, ddc=ddc, is_deleted=True)
+    book.save()
+    return book
+
+def setup_deleted_orphaned_book(title='Deleted Orphaned Book', author='Deleted O. Author', ddc='100'):
+    book = Book(branch=None, title=title, author=author, ddc=ddc, is_deleted=True)
+    return book
+
 def setup_and_save_valid_book_and_branch():
     branch = setup_and_save_valid_branch()
     book = setup_and_save_valid_book(branch=branch)
@@ -70,6 +85,9 @@ def setup_test_book_list():
         setup_and_save_valid_book(branch=branch2, title='book2-801', author='author1-801', ddc='801'),
         setup_and_save_valid_book(branch=branch2, title='book2-901', author='author2-901', ddc='901'),
         setup_and_save_valid_book(branch=branch2, title='book2-bio', author='author2-901', ddc='921', is_bio=True),
+        setup_deleted_book(),
+        setup_orphaned_book(),
+        setup_deleted_orphaned_book(),
     ]
     return books
 
@@ -319,15 +337,21 @@ class HomepageTests(TestCase):
     def test_homepage(self):
         _, branch = setup_and_save_valid_book_and_branch()
         _ = setup_and_save_valid_book(branch=branch, title="One Flew Over the Cuckoo's Nest", author="Ken Kesey", ddc=800, is_bio=False)
+        setup_deleted_book()
+        setup_orphaned_book()
+        setup_deleted_orphaned_book()
 
         response = self.client.get(reverse('rosegarden:index'))
         
         self.assertContains(response, "The Republic")
         self.assertContains(response, html.escape("One Flew Over the Cuckoo's Nest") )
+        self.assertNotContains(response, "Deleted Book")
+        self.assertNotContains(response, "Orphaned Book")
+        self.assertNotContains(response, "Deleted Orphaned Book")
 
     def test_add_book_link_user_not_authenticated(self):
         response = self.client.get(reverse('rosegarden:index'))
-        self.assertNotContains(response, "Add Book")
+        self.assertNotContains(response, "no books in the library")
     
     def test_add_book_link_user_is_authenticated(self):
         _, _ = setup_valid_profile_and_branch()
@@ -336,15 +360,30 @@ class HomepageTests(TestCase):
             raise ValueError('Test user login failed.')
 
         response = self.client.get(reverse('rosegarden:index'))
-        self.assertContains(response, "Add Book")
+        self.assertContains(response, "no books in the library")
 
 class BookDetailsPageTests(TestCase):
-    def test_bookdetails(self):
+    def test_bookdetails_valid_book(self):
         book, _ = setup_and_save_valid_book_and_branch()
         response = self.client.get(reverse('rosegarden:book_details', args=[book.pk]))
         self.assertContains(response, "The Republic")
         self.assertContains(response, "Plato")
         self.assertContains(response, "312")
+    
+    def test_bookdetails_orphaned_book(self):
+        book = setup_orphaned_book()
+        response = self.client.get(reverse('rosegarden:book_details', args=[book.pk]))
+        self.assertEquals(response.status_code, 404)
+    
+    def test_bookdetails_deleted_book(self):
+        book = setup_deleted_book()
+        response = self.client.get(reverse('rosegarden:book_details', args=[book.pk]))
+        self.assertContains(response, "This book has been removed from the library.")
+    
+    def test_bookdetails_deleted_book(self):
+        book = setup_deleted_book()
+        response = self.client.get(reverse('rosegarden:book_details', args=[book.pk]))
+        self.assertContains(response, "This book has been removed from the library.")
 
     def test_bookdetails_user_not_authenticated(self):
         book, _ = setup_and_save_valid_book_and_branch()
@@ -359,7 +398,8 @@ class BookDetailsPageTests(TestCase):
             raise ValueError('Test user login failed.')
 
         response = self.client.get(reverse('rosegarden:book_details', args=[book.pk]))
-        self.assertContains(response, "Click here to edit this book")
+        self.assertContains(response, "Edit this book")
+        self.assertContains(response, "Delete this book")
 
 class BranchDetailsPageTests(TestCase):
     def test_branchdetails(self):
@@ -489,6 +529,33 @@ class BookEditPageTests(TestCase):
         if not self.client.login(username="ben", password="pass"):
             raise ValueError('Test user login failed.')
 
+        response = self.client.get(reverse('rosegarden:edit_book', args=[book.pk]))
+        self.assertEquals(response.status_code, 403)
+
+    def test_edit_orphaned_book(self):
+        book = setup_orphaned_book()
+
+        if not self.client.login(username="ben", password="pass"):
+            raise ValueError('Test user login failed.')
+        
+        response = self.client.get(reverse('rosegarden:edit_book', args=[book.pk]))
+        self.assertEquals(response.status_code, 403)
+    
+    def test_edit_deleted_book(self):
+        book = setup_deleted_book()
+
+        if not self.client.login(username="ben", password="pass"):
+            raise ValueError('Test user login failed.')
+        
+        response = self.client.get(reverse('rosegarden:edit_book', args=[book.pk]))
+        self.assertEquals(response.status_code, 403)
+    
+    def test_edit_deleted_orphaned_book():
+        book = setup_deleted_orphaned_book()
+
+        if not self.client.login(username="ben", password="pass"):
+            raise ValueError('Test user login failed.')
+        
         response = self.client.get(reverse('rosegarden:edit_book', args=[book.pk]))
         self.assertEquals(response.status_code, 403)
 

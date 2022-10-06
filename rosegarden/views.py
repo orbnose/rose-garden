@@ -1,6 +1,7 @@
 from django.shortcuts import render, get_object_or_404
 from django.http import HttpResponse, HttpResponseForbidden, HttpResponseRedirect
 from django.urls import reverse
+from django.conf import settings
 from django.contrib.auth.models import User
 from django.db.models import Q
 
@@ -68,11 +69,13 @@ def userDetails(request, username):
     user = get_object_or_404(User, username=username)
     profile = BranchUserProfile.objects.get(user=user)
     matching_user = profile.matches_request_user(request)
+    change_password_url = settings.CHANGE_PASSWORD_URL
     context = {
         'page_user': user,
         'username': username,
         'profile': profile,
         'matching_user': matching_user,
+        'change_password_url': change_password_url,
     }
     return render(request, 'rosegarden/userDetails.html', context)
 

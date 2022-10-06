@@ -1,7 +1,8 @@
-from django.test import TestCase
+from django.test import TestCase, override_settings
 from django.urls import reverse
 from django.core.exceptions import ValidationError
 from django.contrib.auth.models import User
+from django.conf import settings
 
 import html
 
@@ -392,7 +393,13 @@ class UserListPageTests(TestCase):
         self.assertNotContains(response, 'bob123')
 
 class UserDetailPageTests(TestCase):
+
+    @override_settings(CHANGE_PASSWORD_URL=settings.LOGIN_URL)
     def test_userdetails_not_logged_in(self):
+        # Don't try changing password in this test - the password change url was set above to 
+        #  the same as the login url to ensure something is there even if the project is not
+        #  set up to require authentication.
+
         profile, _ = setup_valid_profile_and_branch()
         username = profile.user.username
         response = self.client.get(reverse('rosegarden:user_details', args=[username]))
@@ -400,8 +407,15 @@ class UserDetailPageTests(TestCase):
         self.assertContains(response, "Home Branch")
         self.assertContains(response, "sustainable agriculture")
         self.assertNotContains(response, "(Edit)")
-    
+        self.assertNotContains(response, "change your password")
+        
+        password_link_piece = '<a href="' + reverse(settings.CHANGE_PASSWORD_URL)
+        self.assertNotContains(response, password_link_piece)
+
+    @override_settings(CHANGE_PASSWORD_URL=settings.LOGIN_URL)
     def test_userdetails_logged_in_viewing_different_user(self):
+        # Don't try changing password in this test - see test_userdetails_not_logged_in
+
         profile, _ = setup_valid_profile_and_branch()
         username = profile.user.username
         setup_valid_user(username='zaphod',password='pass1')
@@ -414,6 +428,10 @@ class UserDetailPageTests(TestCase):
         self.assertContains(response, "Home Branch")
         self.assertContains(response, "sustainable agriculture")
         self.assertNotContains(response, "(Edit)")
+        self.assertNotContains(response, "change your password")
+
+        password_link_piece = '<a href="' + reverse(settings.CHANGE_PASSWORD_URL)
+        self.assertNotContains(response, password_link_piece)
 
         #check that My User Page points to the login user, even when viewing a different user's page
         url = reverse('rosegarden:user_details', args=['zaphod'])
@@ -431,6 +449,7 @@ class UserDetailPageTests(TestCase):
         self.assertContains(response, "Home Branch")
         self.assertContains(response, "sustainable agriculture")
         self.assertContains(response, "(Edit)")
+        self.assertNotContains(response, "change your password")
 
 class BookEditPageTests(TestCase):
     def test_edit_book_does_not_exist(self):

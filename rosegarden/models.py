@@ -58,8 +58,11 @@ class Book(models.Model):
             cat = categories[ddc]
         except KeyError:
             return None
-
         return cat
+    
+    def mark_as_deleted(self):
+        self.is_deleted = True
+        self.branch = None
 
 class BranchUserProfile(models.Model):
     # This class is setup to track user settings specific to the rose garden app
@@ -75,6 +78,12 @@ class BranchUserProfile(models.Model):
         if not book:
             return False
         
+        if not book.branch:
+            return False
+
+        if book.is_deleted:
+            return False
+
         if not (self.branch.pk == book.branch.pk):
             return False
         

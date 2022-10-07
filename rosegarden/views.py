@@ -1,12 +1,12 @@
 from django.shortcuts import render, get_object_or_404
-from django.http import HttpResponse, HttpResponseForbidden, HttpResponseRedirect
+from django.http import HttpResponse, HttpResponseForbidden, HttpResponseRedirect, HttpResponseNotFound
 from django.urls import reverse
 from django.conf import settings
 from django.contrib.auth.models import User
 from django.db.models import Q
 
 from .models import Book, Branch, BranchUserProfile
-from .forms import BookForm, UserProfileInterestsForm, QuickSearchForm, FullSearchForm
+from .forms import BookForm, DeleteBookForm, UserProfileInterestsForm, QuickSearchForm, FullSearchForm
 
 #______________________
 #-- Helper Functions --
@@ -34,7 +34,7 @@ def get_user_branch_profile_from_request(request):
 # -- Page Views --
 
 def homepage(request):
-    context = {'book_list': Book.objects.all().order_by('title')}
+    context = {'book_list': Book.objects.exclude(Q(branch=None) | Q(is_deleted=True)).order_by('title')}
     return render(request, 'rosegarden/index.html', context)
 
 def bookDetails(request, book_pk):
@@ -46,8 +46,15 @@ def bookDetails(request, book_pk):
     else:
         can_view_edit_button = profile.can_edit_book(book)
     
+    # Check if book is already deleted, in which case the template should not render the delete button.
+    if book.is_deleted or not book.branch:
+        is_deleted = True
+    else:
+        is_deleted = False
+
     context = {
         'can_view_edit_button': can_view_edit_button,
+        'is_deleted': is_deleted,
         'book': book
     }
 
@@ -136,6 +143,10 @@ def edit_book(request, book_pk):
     if not profile.can_edit_book(book):
         return HttpResponseForbidden('forbidden')
 
+     # Check if book is already deleted, in which case the template should not render the delete button.
+    if book.is_deleted or not book.branch:
+        return HttpResponseNotFound()
+
     if request.method == 'POST':
         form = BookForm(request.POST, instance=book)
 
@@ -151,6 +162,42 @@ def edit_book(request, book_pk):
         }
     return render(request, 'rosegarden/bookEdit.html', context)
 
+def delete_book(request, book_pk):
+    
+    # Book and profile are valid for editing
+    book = get_object_or_404(Book, pk=book_pk)
+
+    profile = get_user_branch_profile_from_request(request)
+    if profile is None:
+        return HttpResponseForbidden('forbidden')
+
+    if not profile.can_edit_book(book):
+        return HttpResponseForbidden('forbidden')
+
+    # Check if book is already deleted, in which case the template should not render the delete button.
+    if book.is_deleted or not book.branch:
+        already_deleted = True
+    else:
+        already_deleted = False
+    
+    # Render Form
+    if request.method == 'POST':
+        form = DeleteBookForm(request.POST)
+
+        # Delete Book from Library
+        if form.is_valid():
+            book.mark_as_deleted()
+            return HttpResponseRedirect(reverse('rosegarden:book_details', args=[book.pk]))
+    else:
+        form = DeleteBookForm()
+    
+    context = {
+        'book': book,
+        'already_deleted': already_deleted,
+        'form': form,
+        }
+    return render(request, 'rosegarden/bookDelete.html', context)
+
 def get_no_results_flag(book_list):
     if book_list:
         return False
@@ -158,13 +205,17 @@ def get_no_results_flag(book_list):
         return True
 
 def quicksearch_books(query):
-    return Book.objects.filter(
+    booklist = Book.objects.filter(
             Q(title__icontains=query) | 
             Q(author_editor__icontains=query) | 
             Q(branch__name__icontains=query) | 
             Q(version__icontains=query) | 
             Q(ddc_number__icontains=query)
+        ).exclude(
+            Q(branch=None) | Q(is_deleted=True)
         )
+
+    return booklist
 
 def fullsearch_books(querydict):
     logic = querydict["f"]
@@ -217,7 +268,8 @@ def fullsearch_books(querydict):
         else:
             query &= condition
     
-    return Book.objects.filter(query)
+    book_list = Book.objects.filter(query).exclude(Q(branch=None) | Q(is_deleted=True))
+    return book_list
 
 def search(request):
 

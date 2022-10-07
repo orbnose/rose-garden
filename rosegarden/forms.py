@@ -42,3 +42,6 @@ class FullSearchForm(Form):
         ('900', 'History & geography'),])
     bio = forms.BooleanField(required=False)
     branch = forms.ModelChoiceField(required=False, queryset=Branch.objects.all())
+
+class DeleteBookForm(Form):
+    confirm_delete = forms.BooleanField(initial=True, widget=forms.HiddenInput)

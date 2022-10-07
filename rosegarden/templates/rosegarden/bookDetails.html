@@ -1,20 +1,32 @@
 {% extends 'rosegarden/baseTemplate.html' %}
 
-{% block title %}{{ book.title }} | Rose Garden{% endblock title%}
+{% block title %}
+    {% if not is_deleted %}{{ book.title }} | Rose Garden
+    {% else %}Deleted Book{% endif %}
+{% endblock title%}
 
 {% block content%}
-    <h1><i>{{ book.title }}</i></h1>
-    <h2>Available in the <i>{{book.branch.name}}</i> branch</h2>
-    {% if can_view_edit_button %}<h3><a href="{% url 'rosegarden:edit_book' book.pk %}">Click here to edit this book!</a></h3>{% endif %}
 
-    <ul>
-        <li>Title: {{ book.title }}</li>
-        <li>Author or Editor: {{ book.author_editor }} </li>
-        <li>DDC number: {{ book.ddc_number }}</li>
-        <li>Category: {{ book.get_category }}</li>
-        <li>Is this book a biography or memoir?: {{ book.is_biography_or_memoir }}</li>
-        <li>Home Branch: {{ book.branch.name }} </li>
+    {% if is_deleted %}
+        <p>This book has been removed from the library.</p>
+    {% else %}
+        <h1><i>{{ book.title }}</i></h1>
+        <h2>Available in the <i>{{book.branch.name}}</i> branch</h2>
+        
+        {% if can_view_edit_button %}
+            <button href="{% url 'rosegarden:edit_book' book.pk %}">Edit this book</button>
+            <button href="{% url 'rosegarden:delete_book' book.pk %}">Delete this book</button>
+        {% endif %}
 
-    </ul>
+        <ul>
+            <li>Title: {{ book.title }}</li>
+            <li>Author or Editor: {{ book.author_editor }} </li>
+            <li>DDC number: {{ book.ddc_number }}</li>
+            <li>Category: {{ book.get_category }}</li>
+            <li>Is this book a biography or memoir?: {{ book.is_biography_or_memoir }}</li>
+            <li>Home Branch: {{ book.branch.name }} </li>
+
+        </ul>
+    {% endif %}
 
 {% endblock content%}

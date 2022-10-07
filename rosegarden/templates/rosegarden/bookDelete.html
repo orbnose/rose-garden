@@ -1,0 +1,25 @@
+{% extends 'rosegarden/baseTemplate.html' %}
+
+{% block title %}
+    {% if not already_deleted %}Deleting {{ book.title }} | Rose Garden
+    {% else %}Deleted Book{% endif %}
+{% endblock title%}
+
+{% block content%}
+    {% if already_deleted%}
+        <p>This book has been removed from the library.</p>
+    {% else %}
+        <h1>Deleting<i>{{ book.title }}</i></h1>
+        <h2>This book will be removed from the <i>{{book.branch.name}}</i> branch...</h2>
+
+        <p>Are you sure you want to delete this book?</p>
+        <p><b>Warning:</b> This cannot be easily undone! Contact Ben with any questions. </p>
+
+        <form action="{% url 'rosegarden:delete_book_book' book.pk %}" method="post">
+            {% csrf_token %}
+            {{ form }}
+            <input type="submit" value="Delete Book">
+        </form>
+    {% endif %}
+
+{% endblock content%}

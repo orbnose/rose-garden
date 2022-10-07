@@ -18,14 +18,60 @@
             <a href="{% url 'rosegarden:delete_book' book.pk %}"><button>Delete this book</button></a>
         {% endif %}
 
-        <ul>
-            <li>Title: {{ book.title }}</li>
-            <li>Author or Editor: {{ book.author_editor }} </li>
-            <li>DDC number: {{ book.ddc_number }}</li>
-            <li>Category: {{ book.get_category }}</li>
-            <li>Is this book a biography or memoir?: {{ book.is_biography_or_memoir }}</li>
-            <li>Home Branch: {{ book.branch.name }} </li>
+        <ul class="list group">
+            <div class="border">
+                <li class="list-group-item d-flex justify-content-between align-items-start">
+                    <div class="ms-2 me-auto">
+                        Title:
+                        <div class="fw-bold">{{ book.title }}</div>
+                    </div>
+                </li>
+            </div>
+            
+            <div class="border">
+                <li class="list-group-item d-flex justify-content-between align-items-start">
+                    <div class="ms-2 me-auto">
+                        Author or Editor:
+                        <div class="fw-bold">{{ book.author_editor}}</div>
+                    </div>
+                </li>
+            </div>
 
+            <div class="border">
+                <li class="list-group-item d-flex justify-content-between align-items-start">
+                    <div class="ms-2 me-auto">
+                        Dewey Decimal Number:
+                        <div class="fw-bold">{{ book.ddc_number }}</div>
+                    </div>
+                </li>
+            </div>
+                
+            <div class="border">
+                <li class="list-group-item d-flex justify-content-between align-items-start">
+                    <div class="ms-2 me-auto">
+                        Category:
+                        <div class="fw-bold">{{ book.get_category }}</div>
+                    </div>
+                </li>
+            </div>
+
+            <div class="border">
+                <li class="list-group-item d-flex justify-content-between align-items-start">
+                    <div class="ms-2 me-auto">
+                        Is this book a biography or memoir?:
+                        <div class="fw-bold">{{ book.is_biography_or_memoir }}</div>
+                    </div>
+                </li>
+            </div>
+                
+            <div class="border">
+                <li class="list-group-item d-flex justify-content-between align-items-start">
+                    <div class="ms-2 me-auto">
+                        Home Branch:
+                        <div class="fw-bold"><a href="{% url 'rosegarden:branch_details' book.branch.pk %}">{{ book.branch.name }}</a></div>
+                    </div>
+                </li>
+            </div>
         </ul>
     {% endif %}
 

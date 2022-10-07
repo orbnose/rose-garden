@@ -66,7 +66,8 @@ def branchList(request):
 
 def branchDetails(request, branch_pk):
     branch = get_object_or_404(Branch, pk=branch_pk)
-    return render(request, 'rosegarden/branchDetails.html', {'branch': branch})
+    branch_profiles = BranchUserProfile.objects.filter(branch=branch)
+    return render(request, 'rosegarden/branchDetails.html', {'branch': branch, 'branch_profiles': branch_profiles})
 
 def userList(request):
     context = {'profile_list': BranchUserProfile.objects.all().order_by('user__username')}

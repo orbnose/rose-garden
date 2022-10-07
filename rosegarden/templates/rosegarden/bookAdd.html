@@ -3,11 +3,36 @@
 {% block title %}Adding a new book | Rose Garden{% endblock title%}
 
 {% block content%}
-    <h1>Adding a new book to the <i>{{profile.branch.name}}</i> branch...</h1>
+    <h2>Adding a new book to the <i>{{profile.branch.name}}</i> branch...</h2>
 
     <form action="{% url 'rosegarden:add_book' %}" method="post">
         {% csrf_token %}
-        {{ form.as_p }}
+        {{ form.non_field_errors }}
+        <div class="fieldWrapper">
+            {{ form.title.label_tag }}
+            {{ form.title.errors }}
+            {{ form.title }}
+        </div>
+        <div class="fieldWrapper">
+            {{ form.author_editor.label_tag }}
+            {{ form.author_editor.errors }}
+            {{ form.author_editor }}
+        </div>
+        <div class="fieldWrapper">
+            {{ form.ddc_number.label_tag }}
+            {{ form.ddc_number.errors }}
+            {{ form.ddc_number }}
+        </div>
+        <div class="fieldWrapper">
+            {{ form.version.label_tag }}
+            {{ form.version.errors }}
+            {{ form.version }}
+        </div>
+        <div class="fieldWrapper">
+            {{ form.is_biography_or_memoir.label_tag }}
+            {{ form.is_biography_or_memoir.errors }}
+            {{ form.is_biography_or_memoir }}
+        </div>
         <input type="submit" value="Save">
     </form>
 

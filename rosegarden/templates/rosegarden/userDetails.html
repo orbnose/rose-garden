@@ -7,13 +7,33 @@
 
     {% if matching_user %}<p><b>Account Management: </b><a href="{% url change_password_url %}">Click here to change your password.</a></p>{% endif %}
 
-    <ul>
-        <li>Full Name: {{ page_user.get_full_name }}</li>
-        <li>Branch: <a href="{% url 'rosegarden:branch_details' profile.branch.pk %}">{{ profile.branch.name }}</a></li>
-        <li>Interests
-            {% if matching_user %}<a href="{% url 'rosegarden:edit_user' username %}">(Edit)</a>{% endif %}:
-            <div class="ps-5">{{ profile.interests|linebreaks }}</div>
-        </li>
-    </ul>
+    <ul class="list group">
+
+        <div class="border">
+            <li class="list-group-item d-flex justify-content-between align-items-start">
+                <div class="ms-2 me-auto">
+                    Full Name:
+                    <div class="fw-bold">{{ page_user.get_full_name }}</div>
+                </div>
+            </li>
+        </div>
+
+        <div class="border">
+            <li class="list-group-item d-flex justify-content-between align-items-start">
+                <div class="ms-2 me-auto">
+                    Branch:
+                    <div class="fw-bold"><a href="{% url 'rosegarden:branch_details' profile.branch.pk %}">{{ profile.branch.name }}</a></div>
+                </div>
+            </li>
+        </div>
+
+        <div class="border">
+            <li class="list-group-item d-flex justify-content-between align-items-start">
+                <div class="ms-2 me-auto">
+                    Interests{% if matching_user %}<a href="{% url 'rosegarden:edit_user' username %}">(Edit)</a>{% endif %}:
+                    <div class="fw-bold ps-5">{{ profile.interests|linebreaks }}</div>
+                </div>
+            </li>
+        </div>
 
 {% endblock content%}

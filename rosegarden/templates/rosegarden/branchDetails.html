@@ -5,10 +5,53 @@
 {% block content%}
     <h1>Branch details for <i>{{ branch.name }}</i></h1>
 
-    <ul>
-        <li>Name: {{ branch.name }}</li>
-        <li>Location: {{ branch.location }}</li>
-        <li>Branch Users: PLACEHOLDER FOR USERS LIST</li>
+    <ul class="list-group">
+        <div class="border">
+            <li class="list-group-item d-flex justify-content-between align-items-start">
+                <div class="ms-2 me-auto">
+                    Name:
+                    <div class="fw-bold">{{ branch.name }}</div>
+                </div>
+            </li>
+        </div>
+
+        <div class="border">
+            <li class="list-group-item d-flex justify-content-between align-items-start">
+                <div class="ms-2 me-auto">
+                    Location:
+                    <div class="fw-bold">{{ branch.location }}</div>
+                </div>
+            </li>
+        </div>
+
+        <div class="border">
+            <li class="list-group-item d-flex justify-content-between align-items-start">
+                <div class="ms-2 me-auto">
+                    Branch Users:
+                    <div class="fw-bold">
+                        <ul class="list-group">
+                        {% if branch_profiles %}
+                            {% for branch_profile in branch_profiles %}
+                                <li class="list-group-item">
+                                    <a href="{% url 'rosegarden:user_details' branch_profile.user.username %}">{{ branch_profile.user.username }}</a>
+                                </li>
+                            {% endfor %}
+                        {% endif %}
+                        </ul>
+                    </div>
+                </div>
+            </li>
+        </div>
+
     </ul>
 
 {% endblock content%}
+
+<div class="border">
+    <li class="list-group-item d-flex justify-content-between align-items-start">
+        <div class="ms-2 me-auto">
+            Category:
+            <div class="fw-bold">{{ book.get_category }}</div>
+        </div>
+    </li>
+</div>

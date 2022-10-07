@@ -14,8 +14,8 @@
         <h2>Available in the <i>{{book.branch.name}}</i> branch</h2>
         
         {% if can_view_edit_button %}
-            <button href="{% url 'rosegarden:edit_book' book.pk %}">Edit this book</button>
-            <button href="{% url 'rosegarden:delete_book' book.pk %}">Delete this book</button>
+            <a href="{% url 'rosegarden:edit_book' book.pk %}"><button>Edit this book</button></a>
+            <a href="{% url 'rosegarden:delete_book' book.pk %}"><button>Delete this book</button></a>
         {% endif %}
 
         <ul>

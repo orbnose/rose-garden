@@ -6,6 +6,8 @@ from django.conf import settings
 
 import html
 
+from http import HTTPStatus
+
 from .models import Book, Branch, BranchUserProfile
 from .views import quicksearch_books, fullsearch_books
 
@@ -308,6 +310,16 @@ class BookModelTests(TestCase):
         self.assertEquals(book801.get_category(), "Literature")
         self.assertEquals(book901.get_category(), "History and geography")
 
+    def test_mark_as_deleted(self):
+        book, _ = setup_and_save_valid_book_and_branch()
+        pk = book.pk
+        book.mark_as_deleted()
+        book = None
+
+        book_lookup = Book.objects.get(pk=pk)
+        self.assertEquals(book_lookup.branch, None)
+        self.assertEquals(book_lookup.is_deleted, True)
+
 class BranchModelTests(TestCase):
     def test_validator_valid_branch(self):
         testbranch = Branch(name="Home Branch", location="Madison WI")
@@ -325,7 +337,7 @@ class BranchModelTests(TestCase):
             testbranch.full_clean()
 
 class BranchUserProfileModelTests(TestCase):
-    def test_profile_cannot_edit_book(self):
+    def test_profile_cannot_edit_book_diff_branch(self):
         book, _ = setup_and_save_valid_book_and_branch()
         profile, _ = setup_valid_profile_and_branch()
         self.assertIs(profile.can_edit_book(book), False)
@@ -334,7 +346,22 @@ class BranchUserProfileModelTests(TestCase):
         book, branch = setup_and_save_valid_book_and_branch()
         profile, _ = setup_valid_profile_and_user(branch=branch)
         self.assertIs(profile.can_edit_book(book), True)
+    
+    def test_profile_cannot_edit_book_orphaned(self):
+        book = setup_orphaned_book()
+        profile, _ = setup_valid_profile_and_branch()
+        self.assertIs(profile.can_edit_book(book), False)
+    
+    def test_profile_cannot_edit_book_deleted(self):
+        profile, branch = setup_valid_profile_and_branch()
+        book = setup_deleted_book(branch=branch)
+        self.assertIs(profile.can_edit_book(book), False)
 
+    def test_profile_cannot_edit_book_deleted_and_orphaned(self):
+        book = setup_deleted_orphaned_book()
+        profile, _ = setup_valid_profile_and_branch()
+        self.assertIs(profile.can_edit_book(book), False)
+    
 class HomepageTests(TestCase):
     def test_homepage(self):
         _, branch = setup_and_save_valid_book_and_branch()
@@ -563,6 +590,88 @@ class BookEditPageTests(TestCase):
             raise ValueError('Test user login failed.')
         
         response = self.client.get(reverse('rosegarden:edit_book', args=[book.pk]))
+        self.assertEquals(response.status_code, 403)
+
+class BookDeletePageTests(TestCase):
+    def setUp(self):
+        profile, branch = setup_valid_profile_and_branch()
+        different_branch = setup_and_save_valid_branch(name="Crazy Cat Library")
+        no_branch_user = setup_valid_user(username='nobranch', password='pass')
+
+        #pk 1
+        matching_book = setup_and_save_valid_book(branch=branch)
+        
+        #pk 2
+        other_branch_book = setup_and_save_valid_book(branch=different_branch)
+        
+        #pk 3
+        deleted_book = setup_deleted_book(branch=branch)
+        
+        #pk 4
+        orphaned_book = setup_orphaned_book()
+        
+        #pk 5
+        deleted_orphaned_book = setup_deleted_orphaned_book()
+
+    def login(self, username='ben', password='pass'):
+        if not self.client.login(username=username, password=password):
+            raise ValueError('Test user login failed.')
+
+    def test_delete_book_matching_branch(self):
+        delete_url = reverse('rosegarden:delete_book', args=[1])
+        details_url = reverse('rosegarden:book_details', args=[1])
+
+        #Navigate to delete page
+        self.login()
+        response = self.client.get(delete_url)
+        self.assertContains(response, "Delete Book")
+
+        #Delete the book
+        response = self.client.post(delete_url, data = {'confirm_delete': 'True'})
+        self.assertEqual(response.status_code, HTTPStatus.FOUND)
+        self.assertEqual(response["Location"], details_url)
+        self.assertEqual(Book.objects.get(pk=1).branch, None)
+        self.assertEqual(Book.objects.get(pk=1).is_deleted, True)
+
+        #View details page
+        response = self.client.get(details_url)
+        self.assertContains(response, "This book has been removed from the library.")
+
+        #Navigate back to delete page
+        response = self.client.get(delete_url)
+        self.assertEquals(response.status_code, 403)
+
+    def test_delete_book_does_not_exist(self):
+        response = self.client.get(reverse('rosegarden:delete_book', args=[1]))
+        self.assertEquals(response.status_code, 403)
+
+    def test_delete_book_not_authenticated(self):
+        response = self.client.get(reverse('rosegarden:delete_book', args=[1]))
+        self.assertEquals(response.status_code, 403)
+    
+    def test_delete_book_not_matching_branch(self):
+        self.login()
+        response = self.client.get(reverse('rosegarden:delete_book', args=[2]))
+        self.assertEquals(response.status_code, 403)
+
+    def test_delete_book_no_user_branch(self):
+        self.login(username='nobranch')
+        response = self.client.get(reverse('rosegarden:delete_book', args=[1]))
+        self.assertEquals(response.status_code, 403)
+    
+    def test_delete_orphaned_book(self):
+        self.login()
+        response = self.client.get(reverse('rosegarden:delete_book', args=[4]))
+        self.assertEquals(response.status_code, 403)
+
+    def test_delete_deleted_book(self):
+        self.login()
+        response = self.client.get(reverse('rosegarden:delete_book', args=[3]))
+        self.assertEquals(response.status_code, 403)
+    
+    def test_delete_deleted_orphaned_book(self):
+        self.login()
+        response = self.client.get(reverse('rosegarden:delete_book', args=[5]))
         self.assertEquals(response.status_code, 403)
 
 class UserDetailsEditPageTests(TestCase):

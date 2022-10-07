@@ -46,7 +46,7 @@ def bookDetails(request, book_pk):
     else:
         can_view_edit_button = profile.can_edit_book(book)
     
-    # Check if book is already deleted, in which case the template should not render the delete button.
+    # Check if book is already deleted, in which case the template should not render any info, including edit and delete buttons.
     if book.is_deleted or not book.branch:
         is_deleted = True
     else:
@@ -143,7 +143,7 @@ def edit_book(request, book_pk):
     if not profile.can_edit_book(book):
         return HttpResponseForbidden('forbidden')
 
-     # Check if book is already deleted, in which case the template should not render the delete button.
+     # Shouldn't reach this with a deleted or orphaned book, but just in case
     if book.is_deleted or not book.branch:
         return HttpResponseNotFound()
 

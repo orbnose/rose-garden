@@ -63,6 +63,7 @@ class Book(models.Model):
     def mark_as_deleted(self):
         self.is_deleted = True
         self.branch = None
+        self.save()
 
 class BranchUserProfile(models.Model):
     # This class is setup to track user settings specific to the rose garden app

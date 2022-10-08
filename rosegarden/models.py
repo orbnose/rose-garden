@@ -15,6 +15,9 @@ class Branch(models.Model):
     name = models.CharField(max_length=200)
     location = models.CharField(max_length=200)
 
+    class Meta:
+        verbose_name_plural = 'branches'
+
     def __str__(self):
         return self.name
 
@@ -29,8 +32,9 @@ class Book(models.Model):
     is_biography_or_memoir = models.BooleanField(default=False)
     is_deleted = models.BooleanField(default=False)
 
-    # --- Book attributes
-    verbose_name_plural = 'books'
+    # --- Book Meta
+    class Meta:
+        verbose_name_plural = 'books'
     
     # --- Book methods
     def __str__(self):

@@ -20,16 +20,29 @@
                 {% settings_value 'LOGOUT_URL' as LOGOUT_URL %}
 
                 {# Display the navigation bar #}
-                <nav class="navbar">
-                    <a class="nav-link" href="{% url 'rosegarden:index' %}">Home</a>
-                    <a class="nav-link" href="{% url 'rosegarden:search' %}">Search</a>
-                    <a class="nav-link" href="{% url 'rosegarden:branch_list' %}">Branch List</a>
-                    <a class="nav-link" href="{% url 'rosegarden:user_list' %}">User List</a>
-                    {% if user.is_authenticated %}
-                    <a class="nav-link" href="{% url 'rosegarden:user_details' user.username %}">My User Page</a>
-                    <a class="nav-link" href="{% url 'rosegarden:add_book' %}">Add Book</a>
-                    <a class="nav-link" href="{% url LOGOUT_URL %}">Log Out</a>
-                    {% endif %}
+                <nav class="navbar navbar-expand-lg navbar-dark bg-dark">
+                    <div class="container-fluid">
+
+                        <a class="navbar-brand" href="#">Rose Garden Library</a>
+
+                        <button class="navbar-toggler" type="button" data-bs-toggle="collapse" data-bs-target="#navbarNavDropdown" aria-controls="navbarNavDropdown" aria-expanded="false" aria-label="Toggle navigation">
+                            <span class="navbar-toggler-icon"></span>
+                        </button>
+                        
+                        <div class="collapse navbar-collapse" id="navbarNavDropdown">
+                            <ul class="navbar-nav">
+                                <li class="nav-item"><a class="nav-link ps-3" href="{% url 'rosegarden:index' %}">Home</a></li>
+                                <li class="nav-item"><a class="nav-link ps-3" href="{% url 'rosegarden:search' %}">Search</a></li>
+                                <li class="nav-item"><a class="nav-link ps-3" href="{% url 'rosegarden:branch_list' %}">Branch List</a></li>
+                                <li class="nav-item"><a class="nav-link ps-3" href="{% url 'rosegarden:user_list' %}">User List</a></li>
+                                {% if user.is_authenticated %}
+                                <li class="nav-item"><a class="nav-link ps-3" href="{% url 'rosegarden:user_details' user.username %}">My User Page</a></li>
+                                <li class="nav-item"><a class="nav-link ps-3" href="{% url 'rosegarden:add_book' %}">Add Book</a></li>
+                                <li class="nav-item"><a class="nav-link ps-3" href="{% url LOGOUT_URL %}">Log Out</a></li>
+                        {% endif %}
+                            </ul>
+                        </div>
+                    </div>
                 </nav>
                 <hr>
                 {% endblock page_header%}

@@ -3,9 +3,14 @@
 {% block title %} {{ username }} | User Details | Rose Garden {% endblock title%}
 
 {% block content%}
-    <h1>User details for <i>{{ username }}</i></h1>
+    <h2>User details for <i>{{ username }}</i></h2>
 
-    {% if matching_user %}<p><b>Account Management: </b><a href="{% url change_password_url %}">Click here to change your password.</a></p>{% endif %}
+    {% if matching_user %}
+        <p>
+            <b>Account Management: </b>
+            <a href="{% url change_password_url %}"><button type="button" class="btn btn-dark">Click here to change your password</button></a>
+        </p>
+    {% endif %}
 
     <ul class="list group">
 
@@ -30,7 +35,8 @@
         <div class="border">
             <li class="list-group-item d-flex justify-content-between align-items-start">
                 <div class="ms-2 me-auto">
-                    Interests{% if matching_user %}<a href="{% url 'rosegarden:edit_user' username %}">(Edit)</a>{% endif %}:
+                    Interests: 
+                    {% if matching_user %}<a href="{% url 'rosegarden:edit_user' username %}"><button type="button" class="btn btn-dark">Edit</button></a>{% endif %}
                     <div class="fw-bold ps-5">{{ profile.interests|linebreaks }}</div>
                 </div>
             </li>

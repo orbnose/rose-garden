@@ -5,7 +5,9 @@
 {% block content%}
     <h2>Adding a new book to the <i>{{profile.branch.name}}</i> branch...</h2>
 
-    <form action="{% url 'rosegarden:add_book' %}" method="post">
+    <form class="border" action="{% url 'rosegarden:add_book' %}" method="post">
+    <div class="m-3">
+
         {% csrf_token %}
         {{ form.non_field_errors }}
         <div class="fieldWrapper">
@@ -33,7 +35,47 @@
             {{ form.is_biography_or_memoir.errors }}
             {{ form.is_biography_or_memoir }}
         </div>
-        <input type="submit" value="Save">
+        <input type="submit" class="btn btn-dark" value="Save">
+    
+    </div>
     </form>
 
+    <h3 class="pt-4">Help</h3>
+    <div class="border">
+        <div class="m-3">
+
+            <h4>What should I use as the Dewey Decimal Number?</h4>
+            <div class="ps-3">
+                <p>
+                    You should be able to find the most common Dewey Decimal number for non-fiction books
+                    by searching for the book at <a href="http://classify.oclc.org/classify2/">classify.oclc.org/classify2/</a><br>
+                    (Search by ISBN or title/author).
+                </p>
+
+                <p>
+                    Fiction, literature, and poetry can be logged under <b>800</b>.<br>
+                    Biographies use <b>921</b>.
+                </p>
+                    When in doubt, choose the most relevant category and number below:
+                    <table class="table table-striped">
+                        <tr>
+                            <th>Dewey Decimal Number</th>
+                            <th>Category</th>
+                        </tr>
+                        <tr><td>000</td><td>Computer science, information &amp; general works</td></tr>
+                        <tr><td>100</td><td>Philosophy &amp; psychology</td></tr>
+                        <tr><td>200</td><td>Religion</td></tr>
+                        <tr><td>300</td><td>Social sciences</td></tr>
+                        <tr><td>400</td><td>Language</td></tr>
+                        <tr><td>500</td><td>Science</td></tr>
+                        <tr><td>600</td><td>Technology</td></tr>
+                        <tr><td>700</td><td>Arts &amp; recreation</td></tr>
+                        <tr><td>800</td><td>Literature</td></tr>
+                        <tr><td>900</td><td>History &amp; geography</td></tr>
+                    </table>
+                <p>
+            </div>
+
+        </div>
+    </div>
 {% endblock content%}

@@ -518,7 +518,7 @@ class UserDetailPageTests(TestCase):
         self.assertContains(response, "ben ")
         self.assertContains(response, "Home Branch")
         self.assertContains(response, "sustainable agriculture")
-        self.assertContains(response, "(Edit)")
+        self.assertContains(response, "Edit")
         self.assertContains(response, "change your password")
 
 class BookEditPageTests(TestCase):
@@ -720,7 +720,7 @@ class BookAddPageTests(TestCase):
             raise ValueError('Test user login failed.')
 
         url = reverse('rosegarden:add_book')
-        form_html = '<form action="' + url + '" method="post">'
+        form_html = '<form class="border" action="' + url + '" method="post">'
         response = self.client.get(url)
         self.assertContains(response, form_html)
 

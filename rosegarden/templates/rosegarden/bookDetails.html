@@ -10,12 +10,12 @@
     {% if is_deleted %}
         <p>This book has been removed from the library.</p>
     {% else %}
-        <h1><i>{{ book.title }}</i></h1>
-        <h2>Available in the <i>{{book.branch.name}}</i> branch</h2>
+        <h2><i>{{ book.title }}</i></h2>
+        <h3>Available in the <i>{{book.branch.name}}</i> branch</h3>
         
         {% if can_view_edit_button %}
-            <a href="{% url 'rosegarden:edit_book' book.pk %}"><button>Edit this book</button></a>
-            <a href="{% url 'rosegarden:delete_book' book.pk %}"><button>Delete this book</button></a>
+            <a href="{% url 'rosegarden:edit_book' book.pk %}"><button type='button' class='btn btn-dark'>Edit this book</button></a>
+            <a href="{% url 'rosegarden:delete_book' book.pk %}"><button type='button' class='btn btn-dark'>Delete this book</button></a>
         {% endif %}
 
         <ul class="list group">

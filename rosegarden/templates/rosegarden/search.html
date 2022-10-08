@@ -6,12 +6,12 @@
     
 
     {% if no_results_flag %}
-    <h1>No Results Found</h1>
+    <h2>No Results Found</h2>
     <hr>
     {% endif %}
     
     {% if book_list %}
-    <h1>Search Results</h1>
+    <h2>Search Results</h2>
     <table class="table table-striped">
         <tr> {# Header Row #}
             <th>Title</th>
@@ -35,17 +35,89 @@
 
     
     <h2>Quick Search</h2>
-    <p>Keyword search in a book's title, author, version, branch, or DDC number fields.</p>
-    <form action="{% url 'rosegarden:search' %}" method="get">
+    <p class="pb-3">Keyword search in a book's title, author, version, branch, or DDC number fields.</p>
+    <form class="border" action="{% url 'rosegarden:search' %}" method="get">
+    <div class="m-3"
         {{ quicksearch_form.as_p }}
-        <input type="submit" value="Search">
+        <input type="submit" class="btn btn-dark" value="Search">
+    </div>
     </form>
    
-    <h2>Advanced Search</h2>
-    <p>Note that the category filter takes precedence over the dewey decimal range filter if both are present.</p>
-    <form action="{% url 'rosegarden:search' %}" method="get">
-        {{ fullsearch_form.as_p }}
-        <input type="submit" value="Search">
+    <h2 class="pt-3">Advanced Search</h2>
+    <p class="pb-3">The category filter takes precedence over the dewey decimal range filter if both are present.</p>
+    <form class="border" action="{% url 'rosegarden:search' %}" method="get">
+    <div class="m-3">
+
+        {{ fullsearch_form.non_field_errors }}
+        
+        <div class="fieldWrapper">
+            <p>
+            {{ fullsearch_form.f.label_tag }}
+            {{ fullsearch_form.f.errors }}
+            {{ fullsearch_form.f }}
+            </p>
+        </div>
+
+        <div class="fieldWrapper">
+            <p>
+            {{ fullsearch_form.title.label_tag }}
+            {{ fullsearch_form.title.errors }}
+            {{ fullsearch_form.title }}
+            </p>
+        </div>
+
+        <div class="fieldWrapper">
+            <p>
+            {{ fullsearch_form.author.label_tag }}
+            {{ fullsearch_form.author.errors }}
+            {{ fullsearch_form.author }}
+            </p>
+        </div>
+        
+
+        <p>Dewey Decimal Range</p>
+
+        <div class="row pb-4">
+            <div class="col ps-5">
+                {{ fullsearch_form.ddcmin.label_tag }}
+                {{ fullsearch_form.ddcmin.errors }}
+                {{ fullsearch_form.ddcmin }}
+            </div>
+
+            <div class="col">
+                {{ fullsearch_form.ddcmax.label_tag }}
+                {{ fullsearch_form.ddcmax.errors }}
+                {{ fullsearch_form.ddcmax }}
+            </div>
+        </div>
+
+
+        <div class="fieldWrapper">
+            <p>
+            {{ fullsearch_form.cat.label_tag }}
+            {{ fullsearch_form.cat.errors }}
+            {{ fullsearch_form.cat }}
+            </p>
+        </div>
+
+        <div class="fieldWrapper">
+            <p>
+            {{ fullsearch_form.bio.label_tag }}
+            {{ fullsearch_form.bio.errors }}
+            {{ fullsearch_form.bio }}
+            </p>
+        </div>
+
+        <div class="fieldWrapper">
+            <p>
+            {{ fullsearch_form.branch.label_tag }}
+            {{ fullsearch_form.branch.errors }}
+            {{ fullsearch_form.branch }}
+            </p>
+        </div>
+
+        <input type="submit" class="btn btn-dark" value="Search">
+    </div>
     </form>
 
 {% endblock content%}

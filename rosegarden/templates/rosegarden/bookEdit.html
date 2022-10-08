@@ -3,13 +3,13 @@
 {% block title %}Editing {{ book.title }} | Rose Garden{% endblock title%}
 
 {% block content%}
-    <h1>Editing <i>{{ book.title }}</i></h1>
-    <h2>As part of the <i>{{book.branch.name}}</i> branch...</h2>
+    <h2>Editing <i>{{ book.title }}</i></h2>
+    <h4>As part of the <i>{{book.branch.name}}</i> branch...</h4>
 
     <form action="{% url 'rosegarden:edit_book' book.pk %}" method="post">
         {% csrf_token %}
         {{ form.as_p }}
-        <input type="submit" value="Save">
+        <input type="submit" class="btn btn-dark" value="Save">
     </form>
 
 {% endblock content%}

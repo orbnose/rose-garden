@@ -39,7 +39,7 @@ class BookForm(BootstrapBaseModelForm):
         labels = {
             'author_editor': 'Author or Editor',
             'ddc_number': 'Dewey Decimal Number',
-            'is_biography_or_memoir': 'Check if this book as a biography or a memior'
+            'is_biography_or_memoir': 'Check if this book is a biography or a memior'
         }
         error_messages = {
             'author_editor': {

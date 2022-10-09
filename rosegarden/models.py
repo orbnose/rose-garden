@@ -68,7 +68,7 @@ class Book(models.Model):
         self.is_deleted = True
         self.branch = None
         self.save()
-
+        
 class BranchUserProfile(models.Model):
     # This class is setup to track user settings specific to the rose garden app
     #  that are extensions of the base user class currently used for authentication

@@ -37,6 +37,9 @@ def homepage(request):
     context = {'book_list': Book.objects.exclude(Q(branch=None) | Q(is_deleted=True)).order_by('title')}
     return render(request, 'rosegarden/index.html', context)
 
+def how_to(request):
+    return render(request, 'rosegarden/howto.html')
+
 def bookDetails(request, book_pk):
     book = get_object_or_404(Book, pk=book_pk)
     profile = get_user_branch_profile_from_request(request)

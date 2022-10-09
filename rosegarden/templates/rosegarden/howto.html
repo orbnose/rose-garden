@@ -1,0 +1,42 @@
+{% extends 'rosegarden/baseTemplate.html' %}
+
+{% block title %}How To | Rose Garden {% endblock title%}
+
+{% block content%}
+    <div class="border m-3"><div class="m-3">
+        <h2>Branches and Books</h2>
+        <p>
+            {% if user.is_authenticated %}As a user, you will be associated with one branch of the library. You may only create and edit books in your branch.{% endif %}
+            The <a href="{% url 'rosegarden:user_list'%}">Users page</a> shows all active library users, and the
+                <a href="{% url 'rosegarden:branch_list'%}">Branches page</a> shows their respective branches.
+        </p>
+
+        {% if user.is_authenticated %}
+        <p>
+            Use the <a href="{% url 'rosegarden:add_book'%}">Add Book</a> page to add new books to your branch! To edit or delete a book in your branch: either find the book
+            on the <a href="{% url 'rosegarden:index'%}">Home page</a> listing or via the <a href="{% url 'rosegarden:search'%}">Search page</a>, click on the book,
+            and then use the edit or delete buttons at the top of the page.
+        </p>
+        {% endif %}
+
+        <p>
+            The <a href="{% url 'rosegarden:search'%}">Search page</a> provides a quick keyword search and an advanced search to find specific books in any branch of the library.
+        </p>
+    </div></div>
+
+    
+    {% if user.is_authenticated %}
+    <div class="border m-3"><div class="m-3">
+        <h2>User Management</h2>
+        <p>
+            You can change your password any time on the <a href="{% url 'rosegarden:user_details' user.username %}">My User Page</a>. Contact Ben if you forget your password.
+        </p>
+        <p>The My User page also has a place for marking your current reading interests. Please take a moment to fill this out!</p>
+    </div></div>
+    {% endif %}
+
+    <div class="border m-3"><div class="m-3">
+        <h2>Other Questions, Suggestions, or Ideas?</h2>
+        <p>Get in touch with Ben!</p>
+    </div></div>
+{% endblock content%}

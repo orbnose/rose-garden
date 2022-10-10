@@ -11,26 +11,27 @@
     {% endif %}
     
     {% if book_list %}
-    <h2>Search Results</h2>
-    <table class="table table-striped">
-        <tr> {# Header Row #}
-            <th>Title</th>
-            <th>Author or Editor</th>
-            <th>DDC number</th>
-            <th>Category</th>
-            <th>Home Branch</th>
-        </tr>
-        {% for book in book_list %}
-        <tr>
-            <td><a href="{% url 'rosegarden:book_details' book.pk %}">{{ book.title }}</a></td>
-            <td>{{ book.author_editor }}</td>
-            <td>{{ book.ddc_number }}</td>
-            <td>{{ book.get_category }}</td>
-            <td>{{ book.branch.name }}</td>
-        </tr>
-        {% endfor %}
-    </table>
-    <hr>
+        <h2>Search Results</h2>
+        <table class="table table-striped">
+            <tr> {# Header Row #}
+                <th>Title</th>
+                <th>Author or Editor</th>
+                <th>DDC number</th>
+                <th>Category</th>
+                <th>Home Branch</th>
+            </tr>
+            {% for book in book_list %}
+            <tr>
+                <td><a href="{% url 'rosegarden:book_details' book.pk %}">{{ book.title }}</a></td>
+                <td>{{ book.author_editor }}</td>
+                <td>{{ book.ddc_number }}</td>
+                <td>{{ book.get_category }}</td>
+                <td>{{ book.branch.name }}</td>
+            </tr>
+            {% endfor %}
+        </table>
+
+        <hr>
     {% endif %}
 
     

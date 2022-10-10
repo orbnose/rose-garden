@@ -3,6 +3,7 @@ from django.http import HttpResponse, HttpResponseForbidden, HttpResponseRedirec
 from django.urls import reverse
 from django.conf import settings
 from django.contrib.auth.models import User
+from django.core.paginator import Paginator
 from django.db.models import Q
 
 from .models import Book, Branch, BranchUserProfile
@@ -36,7 +37,18 @@ def get_user_branch_profile_from_request(request):
 def homepage(request):
     book_list = Book.objects.exclude(Q(branch=None) | Q(is_deleted=True))
     book_list = list(book_list.order_by('ddc_number'))
-    context = {'book_list': book_list}
+
+    paginator = Paginator(book_list, 50)
+    requested_page = request.GET.get('page')
+    if requested_page:
+        page_number = requested_page
+    else:
+        page_number = 1
+    page_obj = paginator.get_page(page_number)
+
+
+    context = {'book_list': book_list,
+               'page_obj': page_obj}
     return render(request, 'rosegarden/index.html', context)
 
 def how_to(request):

@@ -15,27 +15,30 @@
     </p>
 
     {% if book_list%}
-    <table class="table table-striped">
-        <tr> {# Header Row #}
-            <th>Title</th>
-            <th>Author or Editor</th>
-            <th>DDC number</th>
-            <th>Category</th>
-            <th>Home Branch</th>
-        </tr>
-        {% for book in book_list %}
-        <tr>
-            <td><a href="{% url 'rosegarden:book_details' book.pk %}">{{ book.title }}</a></td>
-            <td>{{ book.author_editor }}</td>
-            <td>{{ book.ddc_number }}</td>
-            <td>{{ book.get_category }}</td>
-            <td>{{ book.branch.name }}</td>
-        </tr>
-        {% endfor %}
-    </table>
+        <table class="table table-striped">
+            <tr> {# Header Row #}
+                <th>Title</th>
+                <th>Author or Editor</th>
+                <th>DDC number</th>
+                <th>Category</th>
+                <th>Home Branch</th>
+            </tr>
+            {% for book in page_obj %}
+            <tr>
+                <td><a href="{% url 'rosegarden:book_details' book.pk %}">{{ book.title }}</a></td>
+                <td>{{ book.author_editor }}</td>
+                <td>{{ book.ddc_number }}</td>
+                <td>{{ book.get_category }}</td>
+                <td>{{ book.branch.name }}</td>
+            </tr>
+            {% endfor %}
+        </table>
+
+        {% include 'rosegarden/paginator.html' %}
+
     {% else %}
-    <p class="ms-3">There are currently no books in the library!</p>
-    {% if user.is_authenticated %}<p>Create a new book on the <i>Add Book</i> page.<p>{% endif %}
+        <p class="ms-3">There are currently no books in the library!</p>
+        {% if user.is_authenticated %}<p>Create a new book on the <i>Add Book</i> page.<p>{% endif %}
     {% endif %}
 
 {% endblock content%}

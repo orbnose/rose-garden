@@ -1,3 +1,7 @@
-body {
-    background: rgb(56, 15, 168);
+.playfairfont {
+    font-family: 'Playfair Display';
+}
+
+h1, h2, h3, h4, h5 {
+    font-family: 'Playfair Display';
 }

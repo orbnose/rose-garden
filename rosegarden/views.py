@@ -34,7 +34,9 @@ def get_user_branch_profile_from_request(request):
 # -- Page Views --
 
 def homepage(request):
-    context = {'book_list': Book.objects.exclude(Q(branch=None) | Q(is_deleted=True)).order_by('title')}
+    book_list = Book.objects.exclude(Q(branch=None) | Q(is_deleted=True))
+    book_list = list(book_list.order_by('ddc_number'))
+    context = {'book_list': book_list}
     return render(request, 'rosegarden/index.html', context)
 
 def how_to(request):
@@ -217,7 +219,7 @@ def quicksearch_books(query):
             Q(ddc_number__icontains=query)
         ).exclude(
             Q(branch=None) | Q(is_deleted=True)
-        )
+        ).order_by('ddc_number')
 
     return booklist
 
@@ -272,7 +274,7 @@ def fullsearch_books(querydict):
         else:
             query &= condition
     
-    book_list = Book.objects.filter(query).exclude(Q(branch=None) | Q(is_deleted=True))
+    book_list = Book.objects.filter(query).exclude(Q(branch=None) | Q(is_deleted=True)).order_by('ddc_number')
     return book_list
 
 def search(request):

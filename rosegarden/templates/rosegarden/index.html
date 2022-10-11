@@ -15,24 +15,26 @@
     </p>
 
     {% if book_list%}
-        <table class="table table-responsive table-striped">
-            <tr> {# Header Row #}
-                <th>Title</th>
-                <th>Author or Editor</th>
-                <th>DDC number</th>
-                <th>Category</th>
-                <th>Home Branch</th>
-            </tr>
-            {% for book in page_obj %}
-            <tr>
-                <td><a href="{% url 'rosegarden:book_details' book.pk %}">{{ book.title }}</a></td>
-                <td>{{ book.author_editor }}</td>
-                <td>{{ book.ddc_number }}</td>
-                <td>{{ book.get_category }}</td>
-                <td>{{ book.branch.name }}</td>
-            </tr>
-            {% endfor %}
-        </table>
+        <div class="table-responsive">
+            <table class="table table-responsive table-striped">
+                <tr> {# Header Row #}
+                    <th>Title</th>
+                    <th>Author or Editor</th>
+                    <th>DDC number</th>
+                    <th>Category</th>
+                    <th>Home Branch</th>
+                </tr>
+                {% for book in page_obj %}
+                <tr>
+                    <td><a href="{% url 'rosegarden:book_details' book.pk %}">{{ book.title }}</a></td>
+                    <td>{{ book.author_editor }}</td>
+                    <td>{{ book.ddc_number }}</td>
+                    <td>{{ book.get_category }}</td>
+                    <td>{{ book.branch.name }}</td>
+                </tr>
+                {% endfor %}
+            </table>
+        </div>
 
         {% include 'rosegarden/paginator.html' %}
 

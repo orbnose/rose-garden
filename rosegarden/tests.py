@@ -16,8 +16,8 @@ def setup_and_save_valid_branch(name="Home Branch", location="Madison Wisconsin"
     branch.save()
     return branch
 
-def setup_and_save_valid_book(branch=None, title="The Republic", author="Plato", ddc='312', is_bio=False):
-    book = Book(branch=branch, title=title, author_editor=author, ddc_number=ddc, is_biography_or_memoir=is_bio)
+def setup_and_save_valid_book(branch=None, title="The Republic", author="Plato", ddc='312', is_bio=False, version="The one on the top shelf"):
+    book = Book(branch=branch, title=title, author_editor=author, ddc_number=ddc, is_biography_or_memoir=is_bio, version=version)
     book.save()
     return book
 
@@ -395,8 +395,13 @@ class BookDetailsPageTests(TestCase):
     def test_bookdetails_valid_book(self):
         book, _ = setup_and_save_valid_book_and_branch()
         response = self.client.get(reverse('rosegarden:book_details', args=[book.pk]))
+        # title
         self.assertContains(response, "The Republic")
+        # author
         self.assertContains(response, "Plato")
+        # version
+        self.assertContains(response, "The one on the top shelf")
+        # DDC number
         self.assertContains(response, "312")
     
     def test_bookdetails_orphaned_book(self):
